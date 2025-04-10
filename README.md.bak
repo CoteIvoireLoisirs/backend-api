@@ -1,0 +1,72 @@
+It looks like you want to include instructions for running your Spring Boot application. Here’s a complete version for the Maven shortcuts and how to run the application:
+
+---
+
+# Success API
+
+This is a simple API that provides a way to manage users and their properties.
+
+## Maven Shortcuts
+
+### Clean
+Clean the `target` directory by removing all compiled files and artifacts:
+```
+mvn clean
+```
+
+### Install
+Compile, test, and package the project, and install the package into the local Maven repository:
+```
+mvn install
+```
+Or, combine `clean` and `install`:
+```
+mvn clean install
+```
+
+### Build 
+Package the project into a JAR/WAR file:
+```
+mvn package
+```
+
+### Run the Application
+#### Running with Docker
+
+Start container 
+```
+docker-compose up
+```
+
+Build the Docker image:
+```
+docker build -t success-api .
+```
+
+Run the Docker container:
+```
+docker run -p 8080:8080 success-api
+```
+
+Ensure that Docker is installed and running on your machine before executing these commands.
+
+#### From mvn with host dependacy 
+Run the Spring Boot application directly using Maven:
+```
+mvn spring-boot:run
+```
+Or, if you have already built the JAR file, you can run it directly using:
+```
+java -jar target/SUCCESS_WEB_API-0.0.1-SNAPSHOT.jar
+```
+Make sure to replace `SUCCESS_WEB_API-0.0.1-SNAPSHOT.jar` with the actual name of the generated JAR file.
+
+### Custom CLI
+Create system rights if not exist
+```
+java -jar target/SUCCESS_WEB_API-0.0.1-SNAPSHOT.jar init-rights
+```
+
+---
+
+Feel free to adjust the instructions if your API name or version changes!

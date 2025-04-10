@@ -1,0 +1,10 @@
+{
+  "code": "WS12345",
+  "name": "Premium Workspace",
+  "limitUser": 100,
+  "limitProject": 50,
+  "limitTime": "2025-12-31T23:59:59Z",
+  "description": "A high-capacity workspace for large teams.",
+  "status": "PENDING",
+  "ownerId": 1
+}

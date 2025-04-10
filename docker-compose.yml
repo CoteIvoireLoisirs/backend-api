@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  ci-explore-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: erastedev/ci-explore:1.0.0
+    restart: always
+    ports:
+      - "8086:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ci_explore
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: ci_explore
+#      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "2085:80"
+    environment:
+      PMA_HOST: mysql
+    depends_on:
+      - mysql

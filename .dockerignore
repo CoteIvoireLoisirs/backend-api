@@ -1,0 +1,51 @@
+# Ignore version control directories
+.git/
+.hg/
+.svn/
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignore build and output directories
+target/
+build/
+dist/
+out/
+
+# Ignore temporary and log files
+*.tmp
+*.log
+
+# Ignore environment and secret files
+.env*
+*.pem
+*.key
+*.crt
+
+# Ignore documentation and metadata
+*.md
+README*
+
+# Ignore Docker-related files
+Dockerfile*
+docker-compose*
+
+# Ignore test and development files
+test/
+tests/
+
+# Ignore Java-specific files
+*.class
+.gradle/
+
+# Ignore other unnecessary files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ensure necessary files are included
+!src/
+!pom.xml

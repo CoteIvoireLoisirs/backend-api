@@ -1,0 +1,14 @@
+{
+  "username": "john_doe",
+  "password": "securePassword123",
+  "twoFA": true,
+  "idToken": "idToken789",
+  "surname": "Doe",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890",
+  "employer": "Tech Corp",
+  "roleId": 3,
+  "updateBy": 1
+}

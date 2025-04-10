@@ -1,0 +1,35 @@
+src/main/java/com/example/successweb/
+│
+├── domain/                      # Contient les objets du domaine et les interfaces (ports)
+│   ├── entities/
+│   │   └── User.java            # Entité représentant un utilisateur
+│   └── ports(services)/
+│       └── UserService.java     # Interface du port définissant les méthodes du service utilisateur
+│
+├── application/                 # Contient les implémentations de la logique métier
+│   └── services/
+│       └── UserServiceImpl.java # Implémentation de la logique métier pour les utilisateurs
+│
+├── infrastructure/              # Contient les adaptateurs externes et les interactions avec les infrastructures
+│   ├── repository/
+│   │   └── UserRepository.java  # Interface pour les opérations de base de données
+│   └── configuration/
+│       └── DatabaseConfig.java  # Configuration de la base de données (ex: DataSource, JPA)
+│
+└── web/                         # Contient les adaptateurs REST pour exposer les API
+    └── controllers/
+        └── UserController.java  # Contrôleur REST pour l'API utilisateur
+
+
+Schéma de Communication
+Voici un schéma simple de la communication entre les composants :
+
+- Port (Interface) : UserService définit les méthodes createUser, getUserById, et getAllUsers.
+- Service (Implémentation) : UserServiceImpl implémente les méthodes du port UserService.
+- Adaptateur : Le UserController utilise le port UserService pour interagir avec la logique métier.
+
+
++-----------------------+         +-----------------------+         +---------------------+
+|    UserController     | ----->  |     UserService       | <------ |  UserServiceImpl    |
+| (Adapter - REST API)  |         | (Port - Interface)    |         |  (Service - Logic)  |
++-----------------------+         +-----------------------+         +---------------------+
