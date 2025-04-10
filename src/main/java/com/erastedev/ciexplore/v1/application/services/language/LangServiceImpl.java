@@ -14,26 +14,25 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SuccessLangServiceImpl implements ISuccessLangService {
+public class LangServiceImpl implements ISuccessLangService {
     @Autowired
     UserServiceImpl userService;
 
     @Autowired
     UserAuthServiceImpl userAuthService;
 
-    Logger logger = LoggerFactory.getLogger(SuccessLangServiceImpl.class);
+    Logger logger = LoggerFactory.getLogger(LangServiceImpl.class);
 
     @Override
     public Language getUserLanguage() {
         User user = userAuthService.getCurrentLoggedUser();
-        return all().stream().filter(l -> l.getCode().equals(user.getLanguage())).findFirst().orElse(getDefaultLanguage());
+        return getDefaultLanguage();
     }
 
     @Override
     public void setUserLanguage(Language language) {
         try {
             User user = userAuthService.getCurrentLoggedUser();
-            user.setLanguage(language.getCode());
             userService.save(user);
         } catch (Exception e) {
             logger.error("Error setting user language", e);

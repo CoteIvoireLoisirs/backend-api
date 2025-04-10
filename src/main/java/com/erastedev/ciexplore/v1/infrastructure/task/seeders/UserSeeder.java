@@ -37,29 +37,9 @@ public class UserSeeder extends AbstractCommonSeeder {
                     .email("admin@omconsulting-group.com")
                     .password(service.encodePassword("admin"))
                     .lastName("Admin")
-                    .twoFA(true)
-                    .isAdmin(true)
                     .build();
 
-            User admin2 = User.builder()
-                    .username("m.ouattara@omconsulting-group.com")
-                    .email("m.ouattara@omconsulting-group.com")
-                    .password("$2a$10$bpTmEblKKHn1pww6vYfbNO/rcnZuLaKbOWQhxHEDftZK9Vd1BX.K.")
-                    .lastName("Ouattara")
-                    .twoFA(true)
-                    .isAdmin(true)
-                    .build();
-
-            User admin3 = User.builder()
-                    .username("o.myriam@omconsulting-group.com")
-                    .email("o.myriam@omconsulting-group.com")
-                    .password("$2a$10$D8otOUnFHdK4LEZMdIzuOuIFS8hMEQqJYqo1X5q0xDzlJHQPpjMPK")
-                    .lastName("Myriam")
-                    .twoFA(true)
-                    .isAdmin(true)
-                    .build();
-
-            userRepository.saveAll(new ArrayList<>(List.of(admin, admin2, admin3)));
+            userRepository.saveAll(new ArrayList<>(List.of(admin)));
         }
     }
 

@@ -206,9 +206,6 @@ public class UserProfileServiceImpl extends AbstractCommonService<UserProfile> i
             }
 
             User user = userService.getOptionalUserById(userId).orElse(null);
-            if (user != null && user.isAdmin()) {
-                return adminUserProfile(workspaceCode, userId);
-            }
 
         } catch (Exception e) {
             logger.error("Exception occurred while retrieving user profile for user ID {} and workspace code {}", userId, workspaceCode, e);

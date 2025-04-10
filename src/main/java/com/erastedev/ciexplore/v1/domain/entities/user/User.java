@@ -35,59 +35,6 @@ public class User extends AbstractCommonEntity<User> {
     private String password;
 
     /**
-     * Required. Does this user have two factor authentication
-     */
-    private boolean twoFA;
-
-    /**
-     * Date when password was changed.
-     */
-    @JsonIgnore
-    private Date passwordLastUpdated;
-
-    /**
-     * Date of the user's last login.
-     */
-    @JsonIgnore
-    private Timestamp lastLogin;
-
-    /**
-     * verifying a logged in user.
-     */
-    private boolean isConnected;
-
-    /**
-     * The token used for a user account restore. Will be stored as a hash.
-     */
-    private String restoreToken;
-
-    /**
-     * Using to store temporary token
-     */
-    @JsonIgnore
-    private String tempToken;
-
-    /**
-     * The recovery code used for a user account restore.
-     */
-    private String recoveryCode;
-
-    /**
-     * The token used for a user lookup when sending restore and invite emails.
-     */
-    private String idToken;
-
-    /**
-     * The timestamp representing when the restore window expires.
-     */
-    private Date restoreExpiry;
-
-    /**
-     * Indicates whether this user is currently an invitation.
-     */
-    private String invitationState;
-
-    /**
      * Indicates whether this is user is disabled, which means the user cannot
      * be authenticated.
      */
@@ -104,53 +51,6 @@ public class User extends AbstractCommonEntity<User> {
     private String email;
 
     private String phoneNumber;
-
-    private String jobTitle;
-
-    private String introduction;
-
-    private String gender;
-
-    private Date birthday;
-
-    private String nationality;
-
-    private String employer;
-
-    private String education;
-
-    private String interests;
-
-    private LangCodeEnum language;
-
-    private String avatar;
-
-    private boolean isAdmin;
-
-    // @JsonIgnore
-    // private int roleId;
-
-    // @Transient
-    // private Right role;
-
-    @Transient
-    private UserProfile currentUserProfile;
-
-    @Transient
-    private String displayName;
-
-    public void setDisplayName(String displayName) {
-        this.displayName = this.getFirstName() + " " + this.getLastName();
-    }
-
-    /**
-     * Sets the invitation status to the specified value.
-     *
-     * @param invitationStatus The desired invitation status.
-     */
-    public void setInvitationStatus(String invitationStatus) {
-        this.invitationState = invitationStatus;
-    }
 
     /**
      * * START REQUIRED AbstractCommonEntity
@@ -184,8 +84,8 @@ public class User extends AbstractCommonEntity<User> {
     }
 
     @Override
-    public int compareTo(User object) {
-        return object.getUsername().compareTo(username);
+    public int compareTo(User user) {
+        return 0;
     }
     /**
      * * END REQUIRED AbstractCommonEntity

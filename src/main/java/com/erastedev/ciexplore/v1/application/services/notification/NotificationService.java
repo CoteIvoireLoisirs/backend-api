@@ -1,7 +1,7 @@
 package com.erastedev.ciexplore.v1.application.services.notification;
 
 
-import com.erastedev.ciexplore.v1.application.services.language.SuccessLangServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.language.LangServiceImpl;
 import com.erastedev.ciexplore.v1.domain.models.language.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class NotificationService {
     }
 
     @Autowired
-    private SuccessLangServiceImpl langService;
+    private LangServiceImpl langService;
 
     /**
      * Sends an invitation email to the user with the given recipient email address.

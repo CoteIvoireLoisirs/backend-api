@@ -361,7 +361,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
             }
 
             // update user
-            user.setAvatar(uploadResponse.getFileName());
+            // user.setAvatar(uploadResponse.getFileName());
             user.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
             user.setUpdated(DateUtil.getCurrentTimestamp());
             repository.save(user);
@@ -488,12 +488,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
         try {
             for (User user : userList) {
                 if (user != null && user.getDeleted() == null) {
-                    user.setAvatar(storageService.getUrlFile(user.getAvatar()));
-
-                    if (workspaceCode != null) {
-                        UserProfile workspaceUserProfile = userProfileService.getByWorkspaceCodeAndUserId(workspaceCode, user.getId());
-                        user.setCurrentUserProfile(workspaceUserProfile);
-                    }
                     users.add(user);
                 }
             }
@@ -505,12 +499,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     }
 
     public List<User> sortUsersByWorkspaceAccess(List<User> users, String workspaceCode) {
-        users.sort((u1, u2) -> {
-            boolean u1HasAccess = u1.getCurrentUserProfile() != null;
-            boolean u2HasAccess = u2.getCurrentUserProfile() != null;
-
-            return Boolean.compare(u2HasAccess, u1HasAccess);
-        });
         return users;
     }
 
@@ -528,9 +516,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
             for (UserProfile userProfile : userProfiles) {
                 Optional<User> user = getOptionalUserById(userProfile.getUserId());
                 if (user.isPresent() && user.get().getDeleted() == null && userProfile.getDeleted() == null) {
-                    user.get().setAvatar(storageService.getUrlFile(user.get().getAvatar()));
                     UserProfile workspaceUserProfile = userProfileService.getByWorkspaceCodeAndUserId(workspaceCode, user.get().getId());
-                    user.get().setCurrentUserProfile(workspaceUserProfile);
                     users.add(user.get());
                 }
                 // user.ifPresent(users::add);

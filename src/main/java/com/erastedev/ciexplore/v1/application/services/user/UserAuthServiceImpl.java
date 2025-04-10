@@ -3,9 +3,8 @@ package com.erastedev.ciexplore.v1.application.services.user;
 import com.erastedev.ciexplore.v1.adapters.web.exception.ExpiredInvitationCodeException;
 import com.erastedev.ciexplore.v1.adapters.web.exception.InvalidInvitationCodeException;
 import com.erastedev.ciexplore.v1.adapters.web.message.user.AuthLoginError;
-import ca.deltagis.success.v1.application.request.user.*;
 import com.erastedev.ciexplore.v1.application.request.user.*;
-import com.erastedev.ciexplore.v1.application.services.language.SuccessLangServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.language.LangServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.notification.NotificationService;
 import com.erastedev.ciexplore.v1.application.services.rights.RightServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
@@ -63,7 +62,7 @@ public class UserAuthServiceImpl implements IUserAuthService {
     private WorkspaceServiceImpl workspaceService;
 
     @Autowired
-    private SuccessLangServiceImpl langService;
+    private LangServiceImpl langService;
 
     private static final Logger logger = LoggerFactory.getLogger(UserAuthServiceImpl.class);
 
