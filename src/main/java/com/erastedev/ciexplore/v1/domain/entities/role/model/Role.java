@@ -1,48 +1,38 @@
-/**
- * @Author: Eraste e.kouakou@omconsulting-group.com
- * @Date: 2024-11-28 09:32:50
- * @LastEditors: Eraste e.kouakou@omconsulting-group.com
- * @LastEditTime: 2024-11-28 09:32:50
- */
-package com.erastedev.ciexplore.v1.domain.entities.user;
+package com.erastedev.ciexplore.v1.domain.entities.role.model;
 
-import com.erastedev.ciexplore.v1.domain.entities.rights.ModuleProfileRight;
 import com.erastedev.ciexplore.v1.domain.ports.out.AbstractCommonEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@Table(
-        name = "user_profile",
-        uniqueConstraints = @UniqueConstraint(
-                name = "user_profile_unique_constraint",
-                columnNames = {"userId", "workspaceCode"}
-        )
-)
-public class UserProfile extends AbstractCommonEntity<UserProfile> {
+public class UserRole extends AbstractCommonEntity<UserRole> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @Column(unique = true)
+    @JsonIgnore
+    private UUID uuid = UUID.randomUUID();
 
-    private Long moduleProfileRightId;
+    @Column(unique = true)
+    private String name;
 
-    @Transient
-    private ModuleProfileRight right;
-
-    private String workspaceCode;
+    private boolean enable = true;
 
     /**
      * * START REQUIRED AbstractCommonEntity
      */
-
-    private UUID uuid; // from AbstractCommonEntity
 
     private Long updateBy; // from AbstractCommonEntity
 
@@ -71,8 +61,8 @@ public class UserProfile extends AbstractCommonEntity<UserProfile> {
     }
 
     @Override
-    public int compareTo(UserProfile object) {
-        return 1;
+    public int compareTo(UserRole role) {
+        return 0;
     }
     /**
      * * END REQUIRED AbstractCommonEntity
