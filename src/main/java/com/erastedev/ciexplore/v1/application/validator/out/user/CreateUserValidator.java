@@ -8,16 +8,14 @@
  */
 package com.erastedev.ciexplore.v1.application.validator.out.user;
 
-import com.erastedev.ciexplore.v1.application.services.user.UserProfileServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.entities.user.UserProfile;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.WorkSpaceStatus;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
-import com.erastedev.ciexplore.v1.domain.models.user.UserDeleteResponse;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterState;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +30,6 @@ public class CreateUserValidator {
 
     @Autowired
     WorkspaceServiceImpl workspaceService;
-
-    @Autowired
-    UserProfileServiceImpl userProfileService;
 
     private Logger logger = LoggerFactory.getLogger(CreateUserValidator.class);
 
@@ -177,34 +172,6 @@ public class CreateUserValidator {
         }
     }
 
-    /*
-    public AssociateUserWorkspaceResponse associateUserToMultipleWorkspace(List<AssociateUserWorkspaceRequest> requests) {
-        List<HashMap<String, Boolean>> validationList = new ArrayList<>();
-        try {
-            requests.forEach((request -> {
-                Workspace workspace = workspaceService.getByCode(request.getWorkspaceCode()).orElse(null);
-                UserRegisterAttempt check = workspaceValidation(workspace);
-                HashMap<String, Boolean> map = new HashMap<>();
-                map.put(request.getWorkspaceCode(), check != null);
-                validationList.add(map);
-            }));
-
-            if (validationList.contains(false)) {
-                List<HashMap<String, Boolean>> notValidWorkspace = validationList.stream().filter(map -> map.containsValue(false)).toList();
-                return AssociateUserWorkspaceResponse.builder()
-                        .success(false)
-                        .state(UserRegisterState.WORKSPACE_IS_NOT_ACTIVE)
-                        .workspaceValidation(notValidWorkspace)
-                        .build();
-            }
-
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return UserRegisterAttempt.builder().success(false).state(UserRegisterState.SOMETHING_WENT_WRONG).build();
-        }
-    }*/
-
     /**
      * Deletes a user from the workspace.
      * <p>
@@ -216,12 +183,6 @@ public class CreateUserValidator {
      */
     public UserDeleteResponse deleteUser(Long userId, String workspaceCode) {
         try {
-            // check user profile
-            UserProfile userProfile = userProfileService.getByWorkspaceCodeAndUserId(workspaceCode, userId);
-            if (userProfile == null) {
-                return UserDeleteResponse.builder().success(false).state(UserRegisterState.USER_DOES_NOT_HAVE_ACCESS_TO_WORKSPACE).build();
-            }
-
             // check user
             User user = userService.getUser(userId);
             if (user == null) {

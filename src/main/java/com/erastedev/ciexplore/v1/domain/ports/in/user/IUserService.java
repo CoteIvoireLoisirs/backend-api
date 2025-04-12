@@ -5,8 +5,8 @@ import com.erastedev.ciexplore.v1.application.validator.in.CommonValidation;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonError;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
-import com.erastedev.ciexplore.v1.domain.models.user.UserDeleteResponse;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -131,30 +131,12 @@ public interface IUserService {
     FileUploadResponse changeUserImage(MultipartFile file, User user);
 
     /**
-     * Deletes a user from the workspace.
-     * <p>
-     * This operation will delete a user from the workspace.
-     *
-     * @param id            the ID of the user to delete
-     * @param workspaceCode the code of the workspace to delete from
-     * @return a response containing the result of the deletion
-     */
-    UserDeleteResponse dissociateUserFromWorkspace(Long id, String workspaceCode);
-
-    /**
      * Deletes a user.
      *
      * @param id the ID of the user to delete
      * @return a UserDeleteResponse containing the result of the deletion
      */
     UserDeleteResponse deleteUser(Long id);
-
-    /**
-     * Retrieves all users from the repository.
-     *
-     * @return a list of all users
-     */
-    List<User> getUsersFromWorkspace(String workspaceCode);
 
     /**
      * Retrieves all users from the repository.

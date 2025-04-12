@@ -9,14 +9,13 @@ import com.erastedev.ciexplore.v1.application.services.rights.profile.ProfileSer
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.application.validator.out.user.CreateUserValidator;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.entities.user.UserProfile;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
 import com.erastedev.ciexplore.v1.domain.models.FileNameParam;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
 import com.erastedev.ciexplore.v1.domain.models.rigths.DefaultSystemRight;
-import com.erastedev.ciexplore.v1.domain.models.user.UserDeleteResponse;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterState;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
 import com.erastedev.ciexplore.v1.domain.ports.in.ICommonRepository;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.IUserService;
 import com.erastedev.ciexplore.v1.domain.ports.out.AbstractCommonService;
@@ -41,9 +40,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
 
     @Autowired
     private WorkspaceServiceImpl workspaceService;
-
-    @Autowired
-    private UserProfileServiceImpl userProfileService;
 
     @Autowired
     UserAuthServiceImpl userAuthService;
@@ -205,9 +201,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
 
             // create user
             User userSaved = saveUser(user);
-
-            // associate user to profile
-            userProfileService.associateUserToProfile(userSaved, workspaceCode, DefaultSystemRight.USER);
 
             return UserRegisterAttempt.builder().user(userSaved).state(null).success(true).build();
         } catch (Exception e) {
@@ -409,36 +402,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
         return uploadFileDirectory + "/" + targetWorkspace;
     }
 
-    /**
-     * Deletes a user from the workspace.
-     * <p>
-     * This operation will delete a user from the workspace.
-     *
-     * @param id            the ID of the user to delete
-     * @param workspaceCode the code of the workspace to delete from
-     * @return a response containing the result of the deletion
-     */
-    @Override
-    public UserDeleteResponse dissociateUserFromWorkspace(Long id, String workspaceCode) {
-        try {
-            UserDeleteResponse validation = validator.deleteUser(id, workspaceCode);
-
-            if (validation == null) {
-                // if user not associate with another workspace -> you can delete this user
-                UserProfile userProfile = userProfileService.getByWorkspaceCodeAndUserId(workspaceCode, id);
-                if (userProfile != null) {
-                    userProfileService.delete(userProfile);
-                    return UserDeleteResponse.builder().success(true).state(null).build();
-                }
-            }
-
-            return UserDeleteResponse.builder().success(false).state(validation.getState()).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return UserDeleteResponse.builder().success(false).state(UserRegisterState.SOMETHING_WENT_WRONG).build();
-        }
-    }
-
     @Override
     public UserDeleteResponse deleteUser(Long id) {
         try {
@@ -446,9 +409,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
             if (user == null) {
                 return UserDeleteResponse.builder().success(false).state(UserRegisterState.USER_NOT_FOUND).build();
             }
-
-            // delete all user profile
-            userProfileService.deleteAllUserProfileByUserId(id);
 
             // delte user
             delete(user);
@@ -500,33 +460,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
 
     public List<User> sortUsersByWorkspaceAccess(List<User> users, String workspaceCode) {
         return users;
-    }
-
-    /**
-     * Retrieves all users associated with a given workspace code.
-     *
-     * @param workspaceCode the workspace code to filter users by
-     * @return a list of Users associated with the specified workspace
-     */
-    public List<User> getUsersFromWorkspace(String workspaceCode) {
-        try {
-            List<UserProfile> userProfiles = userProfileService.getByWorkspaceCode(workspaceCode);
-            List<User> users = new ArrayList<>();
-
-            for (UserProfile userProfile : userProfiles) {
-                Optional<User> user = getOptionalUserById(userProfile.getUserId());
-                if (user.isPresent() && user.get().getDeleted() == null && userProfile.getDeleted() == null) {
-                    UserProfile workspaceUserProfile = userProfileService.getByWorkspaceCodeAndUserId(workspaceCode, user.get().getId());
-                    users.add(user.get());
-                }
-                // user.ifPresent(users::add);
-            }
-
-            return users;
-        } catch (Exception e) {
-            logger.error("Failed to retrieve users from workspace {}: {}", workspaceCode, e.getMessage());
-            return new ArrayList<>();
-        }
     }
 
     /**

@@ -8,7 +8,7 @@ import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationR
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -40,10 +40,9 @@ public interface IUserAuthService {
      *
      * @param record the AuthenticationRecord containing the token and type
      * @param user   the User object containing user details
-     * @param rights the HashMap containing user rights
      * @return an AuthenticationResponse containing the authentication details
      */
-    AuthenticationResponse buildAuthenticationResponse(AuthenticationRecord record, User user, HashMap<String, HashMap<String, Boolean>> rights);
+    AuthenticationResponse buildAuthenticationResponse(AuthenticationRecord record, User user);
 
     /**
      * Authenticates a user given their username and password.
@@ -114,20 +113,6 @@ public interface IUserAuthService {
      * @throws Exception if there is an error sending the registration validation message
      */
     boolean SendRegisterConfirmationEmailMessage(String email) throws Exception;
-
-    /**
-     * Calculates the duration of the user's connection in minutes.
-     * <p>
-     * This method retrieves the last login timestamp of the user
-     * and calculates the difference in time between the last login
-     * and the current time. If the user is not connected (i.e., last
-     * login timestamp is null), it returns -1 to indicate the user
-     * is not connected.
-     *
-     * @param user the user for whom the connection duration is calculated
-     * @return the duration of the user's connection in minutes, or -1 if the user is not connected
-     */
-    long userConexionDuration(User user);
 
     /**
      * Authenticates a user given their username and password.

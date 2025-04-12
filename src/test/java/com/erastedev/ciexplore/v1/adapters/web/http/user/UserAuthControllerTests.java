@@ -5,11 +5,9 @@ import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
 import com.erastedev.ciexplore.v1.application.request.user.UserSignInRequest;
 import com.erastedev.ciexplore.v1.application.services.logs.LogServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserProfileServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.entities.user.UserProfile;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.IUserService;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.auth.IUserAuthService;
 import com.erastedev.ciexplore.v1.infrastructure.utils.HttpRequestUtil;
@@ -46,9 +44,6 @@ public class UserAuthControllerTests {
     private IUserAuthService userAuthServiceMock;
 
     @Mock
-    private UserProfileServiceImpl userProfileService;
-
-    @Mock
     private AuthenticationManager authenticationManager;
 
     @Mock
@@ -71,20 +66,17 @@ public class UserAuthControllerTests {
         userAuthController = new UserAuthController(authenticationManager);
         userAuthController.userAuthService = userAuthServiceMock;
         userAuthController.userService = userService;
-        userAuthController.userProfileService = userProfileService;
         userAuthController.httpRequestUtil = httpRequestUtil;
         userAuthController.auditService = auditService;
         userAuthController.response = response;
         when(userAuthService.authenticate(any())).thenReturn(new AuthenticationResult("", null));
         when(userService.getUserByUsername(any())).thenReturn(new User());
-        when(userProfileService.getAllByWorkspaceCodeAndUserId(any(), any())).thenReturn(List.of(new UserProfile()));
     }
 
     @Test
     public void testAutowiredDependencies() {
         assertNotNull(userAuthController.userService);
         assertNotNull(userAuthController.userAuthService);
-        assertNotNull(userAuthController.userProfileService);
         assertNotNull(userAuthController.authenticationManager);
         assertNotNull(userAuthController.httpRequestUtil);
         assertNotNull(userAuthController.auditService);
@@ -103,7 +95,6 @@ public class UserAuthControllerTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(userAuthService).authenticate(userRequest);
         verify(userService).getUserByUsername(userRequest.getUsername());
-        verify(userProfileService).getAllByWorkspaceCodeAndUserId(userRequest.getWorkspaceCode(), any());
     }
 
     @Test

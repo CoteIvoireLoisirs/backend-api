@@ -4,7 +4,7 @@
  * @LastEditors: Eraste e.kouakou@omconsulting-group.com
  * @LastEditTime: 2024-10-29 19:33:08
  */
-package com.erastedev.ciexplore.v1.domain.models.user;
+package com.erastedev.ciexplore.v1.domain.entities.user.model;
 
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 

@@ -24,6 +24,7 @@ public class User extends AbstractCommonEntity<User> {
 
     @Column(unique = true)
     @JsonIgnore
+
     private UUID uuid = UUID.randomUUID();
 
     @Column(unique = true)

@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserRole extends AbstractCommonEntity<UserRole> {
+public class Role extends AbstractCommonEntity<Role> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,7 +61,7 @@ public class UserRole extends AbstractCommonEntity<UserRole> {
     }
 
     @Override
-    public int compareTo(UserRole role) {
+    public int compareTo(Role role) {
         return 0;
     }
     /**

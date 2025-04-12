@@ -14,10 +14,10 @@ import com.erastedev.ciexplore.v1.application.services.user.auth.JwtServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.rights.Right;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.models.user.UserInvitationState;
-import com.erastedev.ciexplore.v1.domain.models.user.UserMapper;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterState;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserInvitationState;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserMapper;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.auth.IUserAuthService;
 import com.erastedev.ciexplore.v1.infrastructure.repository.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -135,19 +135,6 @@ public class UserAuthServiceImpl implements IUserAuthService {
             return AuthenticationResult.failure(AuthLoginError.USER_NOT_FOUND);
         }
 
-        boolean isAdmin = user.get().isAdmin();
-
-        if (isUserAlreadyConnected(user.get())) {
-            // TODO : remove after implementation workspaceCode
-            // return AuthenticationResult.failure(AuthLoginError.ALREADY_LOGGED_IN);
-        }
-
-        if (!isAdmin && workspaceCode != null) {
-            if (!workspaceService.userCanAccessToWorkspace(workspaceCode, user.get().getId())) {
-                return AuthenticationResult.failure(AuthLoginError.CANT_ACCESS_WORKSPACE);
-            }
-        }
-
         if (!authenticateUser(username, password)) {
             return AuthenticationResult.failure(AuthLoginError.INVALID_CREDENTIALS);
         }
@@ -158,8 +145,8 @@ public class UserAuthServiceImpl implements IUserAuthService {
     }
 
     @Override
-    public AuthenticationResponse buildAuthenticationResponse(AuthenticationRecord record, User user, HashMap<String, HashMap<String, Boolean>> rights) {
-        return new AuthenticationResponse(record, user, rights);
+    public AuthenticationResponse buildAuthenticationResponse(AuthenticationRecord record, User user) {
+        return new AuthenticationResponse(record, user);
     }
 
     public InviteUserResponse inviteUser(InviteUserRequest params) {
@@ -194,7 +181,6 @@ public class UserAuthServiceImpl implements IUserAuthService {
         String token = jwtService.generateTokenBy(params.getEmail(), 2);
         User user = definieInvitedUser(params);
         try {
-            user.setTempToken(token);
             user = userService.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Error creating user", e);
@@ -242,10 +228,10 @@ public class UserAuthServiceImpl implements IUserAuthService {
         // check if user already registered
         Optional<User> userCheck = userService.getOptionalUserByEmail(user.getEmail());
         if (userCheck.isPresent()) {
-            if (userCheck.get().getInvitationState().equals(UserInvitationState.ACCEPTED.toString())) {
-                attempt.setState(UserRegisterState.ALREADY_REGISTERED);
-                return attempt;
-            }
+//            if (userCheck.get().getInvitationState().equals(UserInvitationState.ACCEPTED.toString())) {
+//                attempt.setState(UserRegisterState.ALREADY_REGISTERED);
+//                return attempt;
+//            }
         }
 
         try {
@@ -321,7 +307,7 @@ public class UserAuthServiceImpl implements IUserAuthService {
         // user.setRoleId(params.getRoleId());
         user.setEmail(params.getEmail());
         user.setUsername(params.getEmail());
-        user.setInvitationStatus(UserInvitationState.PENDING.toString());
+        // user.setInvitationStatus(UserInvitationState.PENDING.toString());
         return user;
     }
 
@@ -343,7 +329,7 @@ public class UserAuthServiceImpl implements IUserAuthService {
         // l'email
         Optional<User> user = userService.getOptionalUserByEmail(email);
         if (user.isPresent()) {
-            user.get().setRecoveryCode(code);
+            // user.get().setRecoveryCode(code);
             userService.save(user.get());
 
             // #2 Envoyez le code par email
@@ -374,7 +360,7 @@ public class UserAuthServiceImpl implements IUserAuthService {
         Optional<User> user = userService.getOptionalUserByEmail(email);
         if (user.isPresent()) {
             User foundUser = user.get();
-            return foundUser.getRecoveryCode().equals(code);
+            // return foundUser.getRecoveryCode().equals(code);
         }
 
         return false;
@@ -467,38 +453,6 @@ public class UserAuthServiceImpl implements IUserAuthService {
     }
 
     /**
-     * Determines if the user is already connected and their connection duration is
-     * less
-     * than the blocking threshold in minutes.
-     *
-     * @param user the user to check
-     * @return true if the user is already connected and their connection duration
-     * is
-     * less than the blocking threshold, false otherwise
-     */
-    private boolean isUserAlreadyConnected(User user) {
-        if (user.isConnected()) {
-            long minutesSinceLastConnection = calculateConnectionDuration(user);
-            return minutesSinceLastConnection >= 0 && minutesSinceLastConnection < BLOCKING_THRESHOLD_MINUTES;
-        }
-        return false;
-    }
-
-    /**
-     * Calculates the duration of the user's connection in minutes.
-     * <p>
-     * This method calls the {@link #userConexionDuration(User)} method to
-     * calculate the duration of the user's connection in minutes.
-     *
-     * @param user the user for whom the connection duration is calculated
-     * @return the duration of the user's connection in minutes, or -1 if the user
-     * is not connected
-     */
-    private long calculateConnectionDuration(User user) {
-        return this.userConexionDuration(user);
-    }
-
-    /**
      * Authenticates a user with the provided username and password.
      * <p>
      * This method uses the AuthenticationManager to attempt authentication with
@@ -526,8 +480,8 @@ public class UserAuthServiceImpl implements IUserAuthService {
      * @param user the user whose connection status is updated
      */
     public void updateUserConnectionStatus(User user) {
-        user.setConnected(true);
-        user.setLastLogin(new Timestamp(System.currentTimeMillis()));
+//        user.setConnected(true);
+//        user.setLastLogin(new Timestamp(System.currentTimeMillis()));
         userService.save(user);
     }
 
@@ -543,35 +497,6 @@ public class UserAuthServiceImpl implements IUserAuthService {
     private String generateTokenForUser(User user) {
         UserDetails userDetails = new CustomUserDetails(user);
         return jwtService.generateToken(userDetails);
-    }
-
-    /**
-     * Calculate the time interval in minutes between the last connection of the
-     * user
-     * and the present time.
-     *
-     * @param user the user to calculate the connection duration for
-     * @return the time interval in minutes between the last connection and the
-     * present
-     * time, or -1 if the user is not connected
-     */
-    public long userConexionDuration(User user) {
-        // retrieve last connection
-        Timestamp lastLogin = user.getLastLogin();
-
-        // Si lastLogin est null, cela signifie que l'utilisateur n'est pas connecté
-
-        if (lastLogin == null) {
-            return -1; // ou autre valeur pour indiquer que l'utilisateur n'est connecté
-        }
-
-        // Convertir Timestamp en Instant
-        Instant lastLoginInstant = lastLogin.toInstant();
-
-        Instant now = Instant.now();
-
-        // calculates the time interval between the connection the present time
-        return Duration.between(lastLoginInstant, now).toMinutes();
     }
 
     @Override
@@ -638,8 +563,8 @@ public class UserAuthServiceImpl implements IUserAuthService {
 
             // Met à jour l'état de connexion de l'utilisateur
             if (currentUser != null) {
-                currentUser.setConnected(false);
-                currentUser.setLastLogin(null);
+                // currentUser.setConnected(false);
+                // currentUser.setLastLogin(null);
                 userService.save(currentUser);
                 return true;
             }

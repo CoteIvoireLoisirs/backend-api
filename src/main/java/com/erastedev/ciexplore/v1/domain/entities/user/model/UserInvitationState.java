@@ -1,5 +1,5 @@
 
-package com.erastedev.ciexplore.v1.domain.models.user;
+package com.erastedev.ciexplore.v1.domain.entities.user.model;
 
 /**
  * @Author: Eraste e.kouakou@omconsulting-group.com

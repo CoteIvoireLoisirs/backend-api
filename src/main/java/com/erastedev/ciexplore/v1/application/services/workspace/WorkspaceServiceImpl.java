@@ -12,7 +12,6 @@ import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.files.FileNameBuilder;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserProfileServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.WorkSpaceStatus;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
@@ -60,9 +59,6 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
 
     @Autowired
     private UserAuthServiceImpl userAuthService;
-
-    @Autowired
-    private UserProfileServiceImpl userProfileService;
 
     @Autowired
     FileStorageServiceImpl storageService;
@@ -115,7 +111,6 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
                 .peek(workspace -> workspace.setOwner(userService.getOptionalUserById(workspace.getOwnerId()).orElse(null)))
                 .peek(workspace -> workspace.setImageUrl(storageService.getUrlFile(workspace.getImagePath())))
                 .peek(workspace -> workspace.setProjectCount(countProjectByWorkspaceCode(workspace.getCode())))
-                .peek(workspace -> workspace.setUserCount(countUserByWorkspaceCode(workspace.getCode())))
                 .toList();
     }
 
@@ -142,7 +137,6 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
             return null;
         }
         workspace.setProjectCount(countProjectByWorkspaceCode(workspace.getCode()));
-        workspace.setUserCount(countUserByWorkspaceCode(workspace.getCode()));
         return workspace;
     }
 
@@ -193,18 +187,6 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
             errorDetail.put("message", e.getMessage());
             return new WorkspaceSaveResponse(null, WorkspaceMessage.SOMETHING_WENT_WRONG, errorDetail);
         }
-    }
-
-    /**
-     * Verifies if a user can access to a workspace by its code.
-     *
-     * @param userId        the ID of the user to be verified.
-     * @param workspaceCode the code of the workspace to be verified.
-     * @return true if the user can access, false otherwise.
-     */
-    @Override
-    public boolean userCanAccessToWorkspace(String workspaceCode, Long userId) {
-        return userProfileService.existsByWorkspaceCodeAndUserId(workspaceCode, userId);
     }
 
     /**
@@ -425,16 +407,5 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
     public int countProjectByWorkspaceCode(String workspaceCode) {
         // TODO : fix
         return 0;
-    }
-
-    /**
-     * Counts the number of users associated with a given workspace code.
-     *
-     * @param workspaceCode the code of the workspace.
-     * @return the number of users associated with the workspace.
-     */
-    @Override
-    public int countUserByWorkspaceCode(String workspaceCode) {
-        return userService.getUsersFromWorkspace(workspaceCode).size();
     }
 }

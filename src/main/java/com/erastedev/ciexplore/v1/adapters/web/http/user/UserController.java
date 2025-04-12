@@ -10,9 +10,9 @@ import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
-import com.erastedev.ciexplore.v1.domain.models.user.UserDeleteResponse;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterState;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -42,33 +42,6 @@ public class UserController {
 
     @Autowired
     private ApiResponseService response;
-
-    /**
-     * Retrieves all users from the specified workspace.
-     * <p>
-     * This operation will return all users from the specified workspace.
-     * </p>
-     *
-     * @param workspaceCode the workspace code to retrieve users from
-     * @return a list of users from the specified workspace
-     */
-    @Operation(summary = "Get all workspace users", description = "Gets all workspace users")
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User retrieved successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to retrieve user"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Workspace not found"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error")
-    })
-    @GetMapping("workspace/{workspaceCode}")
-    public ResponseEntity<ApiResponse<List<User>>> getUsersFromWorkspace(
-            @Parameter @PathVariable String workspaceCode
-    ) {
-        try {
-            return new ApiBuilder<List<User>>().success("User retrieved successfully", service.getUsersFromWorkspace(workspaceCode));
-        } catch (Exception e) {
-            return response.internalError("Failed to retrieve user", e);
-        }
-    }
 
     /**
      * Retrieves all users.
@@ -157,38 +130,6 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return response.internalError("Failed to create user", e);
-        }
-    }
-
-    /**
-     * Dissociate a user from a workspace.
-     *
-     * <p>
-     * Dissociate a user from a workspace.
-     *
-     * @param userId        the id of the user to dissociate
-     * @param workspaceCode the workspace code
-     * @return a response containing the result of the dissociation
-     */
-    @Operation(summary = "Dissociate user from workspace", description = "Dissociate user from workspace")
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User has been dissociated from workspace successfully"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Failed to dissociate user"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal Server Error")
-    })
-    @DeleteMapping("workspace/{workspaceCode}/{userId}")
-    public ResponseEntity<ApiResponse<Boolean>> dissociateUserFromWorkspace(@PathVariable Long userId, @PathVariable String workspaceCode) {
-        try {
-            UserDeleteResponse deleteResponse = service.dissociateUserFromWorkspace(userId, workspaceCode);
-            if (!deleteResponse.getSuccess()) {
-                return new ApiBuilder<Boolean>().badResponse(deleteResponse.getState().name(), "Failed to dissociate user");
-            }
-
-            return new ApiBuilder<Boolean>().success("User has been dissociated from workspace successfully", true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return response.internalError("Internal Server Error : Failed to dissociate user", e);
         }
     }
 

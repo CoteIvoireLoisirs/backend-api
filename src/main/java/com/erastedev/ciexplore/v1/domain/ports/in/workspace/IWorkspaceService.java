@@ -40,15 +40,6 @@ public interface IWorkspaceService {
     WorkspaceSaveResponse saveWorkspace(Workspace workspace);
 
     /**
-     * Verifies if a user can access to a workspace by its code.
-     *
-     * @param workspaceCode the code of the workspace to be verified.
-     * @param userId        the ID of the user to be verified.
-     * @return true if the user can access, false otherwise.
-     */
-    boolean userCanAccessToWorkspace(String workspaceCode, Long userId);
-
-    /**
      * Activates a workspace by its code.
      *
      * @param code the code of the workspace to be activated.
@@ -97,12 +88,4 @@ public interface IWorkspaceService {
      * @return the number of projects in the workspace.
      */
     int countProjectByWorkspaceCode(String workspaceCode);
-
-    /**
-     * Counts the number of users associated with a given workspace code.
-     *
-     * @param workspaceCode the code of the workspace.
-     * @return the number of users associated with the workspace.
-     */
-    int countUserByWorkspaceCode(String workspaceCode);
 }

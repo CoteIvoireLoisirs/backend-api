@@ -10,16 +10,14 @@ import com.erastedev.ciexplore.v1.application.request.user.UserSignUpRequest;
 import com.erastedev.ciexplore.v1.adapters.web.message.user.UserCustomMessage;
 import com.erastedev.ciexplore.v1.application.services.logs.LogServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserProfileServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.entities.user.UserProfile;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 import com.erastedev.ciexplore.v1.domain.models.logs.Loggable;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterAttempt;
-import com.erastedev.ciexplore.v1.domain.models.user.UserRegisterState;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.IUserService;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.auth.IUserAuthService;
 import com.erastedev.ciexplore.v1.infrastructure.utils.HttpRequestUtil;
@@ -49,9 +47,6 @@ public class UserAuthController {
 
     @Autowired
     public IUserAuthService userAuthService;
-
-    @Autowired
-    public UserProfileServiceImpl userProfileService;
 
     public final AuthenticationManager authenticationManager;
 
@@ -103,9 +98,8 @@ public class UserAuthController {
             if (result.isSuccess()) {
                 User userAttempt = userService.getUserByUsername(user.getUsername());
                 AuthenticationRecord record = new AuthenticationRecord(result.getToken(), "Bearer");
-                UserProfile userProfile = userProfileService.getByWorkspaceCodeAndUserId(user.getWorkspaceCode(), userAttempt.getId());
 
-                authResponse = userAuthService.buildAuthenticationResponse(record, userAttempt, userProfile.getRight().getModuleRight());
+                authResponse = userAuthService.buildAuthenticationResponse(record, userAttempt);
                 return response.success("User logged in successfully", authResponse, HttpStatus.OK);
             }
 
