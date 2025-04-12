@@ -5,14 +5,12 @@ import com.erastedev.ciexplore.v1.application.validator.in.CommonError;
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.files.FileNameBuilder;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.rights.profile.ProfileServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.application.validator.out.user.CreateUserValidator;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
 import com.erastedev.ciexplore.v1.domain.models.FileNameParam;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
-import com.erastedev.ciexplore.v1.domain.models.rigths.DefaultSystemRight;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
@@ -43,9 +41,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
 
     @Autowired
     UserAuthServiceImpl userAuthService;
-
-    @Autowired
-    ProfileServiceImpl profileService;
 
     @Autowired
     private CreateUserValidator validator;
@@ -191,7 +186,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     public UserRegisterAttempt createUserFromWorkspace(User user, String workspaceCode) {
         try {
             // check if modules, rights are not empty
-            profileService.initializeDefaultData();
+            // profileService.initializeDefaultData();
 
             Workspace workspace = workspaceService.getByCode(workspaceCode).orElse(null);
             UserRegisterAttempt createAttempt = validator.validateCreateUserAndAssociateToWorkspace(user, workspace);

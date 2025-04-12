@@ -2,9 +2,7 @@ package com.erastedev.ciexplore.v1.domain.entities.user;
 
 import com.erastedev.ciexplore.v1.domain.models.language.LangCodeEnum;
 import com.erastedev.ciexplore.v1.domain.ports.out.AbstractCommonEntity;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 @Entity
@@ -84,9 +81,6 @@ public class UserSettings extends AbstractCommonEntity<UserSettings> {
     private LangCodeEnum language;
 
     private String avatar;
-
-    @Transient
-    private UserProfile currentUserProfile;
 
     @Transient
     private String displayName;

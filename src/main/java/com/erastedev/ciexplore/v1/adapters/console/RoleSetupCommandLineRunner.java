@@ -6,12 +6,15 @@
  */
 package com.erastedev.ciexplore.v1.adapters.console;
 
-import com.erastedev.ciexplore.v1.application.services.rights.RightServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 
 public class RoleSetupCommandLineRunner implements CommandLineRunner {
+    @Override
+    public void run(String... args) throws Exception {
 
-    private final RightServiceImpl rightService;
+    }
+
+   /* private final RightServiceImpl rightService;
 
     public RoleSetupCommandLineRunner(RightServiceImpl rightService) {
         this.rightService = rightService;
@@ -21,5 +24,5 @@ public class RoleSetupCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         rightService.createDefaultRightsIfNotExist();
         System.out.println("Default rights creation task executed.");
-    }
+    }*/
 }

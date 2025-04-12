@@ -6,7 +6,6 @@ import com.erastedev.ciexplore.v1.adapters.web.message.user.AuthLoginError;
 import com.erastedev.ciexplore.v1.application.request.user.*;
 import com.erastedev.ciexplore.v1.application.services.language.LangServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.notification.NotificationService;
-import com.erastedev.ciexplore.v1.application.services.rights.RightServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
@@ -14,7 +13,6 @@ import com.erastedev.ciexplore.v1.application.services.user.auth.JwtServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.rights.Right;
 import com.erastedev.ciexplore.v1.domain.entities.user.User;
-import com.erastedev.ciexplore.v1.domain.entities.user.model.UserInvitationState;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserMapper;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
@@ -36,9 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -52,8 +47,6 @@ public class UserAuthServiceImpl implements IUserAuthService {
     private final AuthenticationManager authenticationManager;
 
     private final JwtServiceImpl jwtService;
-
-    private final RightServiceImpl rightService;
 
     @Autowired
     private NotificationService notificationService;
@@ -77,14 +70,12 @@ public class UserAuthServiceImpl implements IUserAuthService {
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             UserServiceImpl userService,
-            JwtServiceImpl jwtService,
-            RightServiceImpl rightService
+            JwtServiceImpl jwtService
     ) {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtService = jwtService;
-        this.rightService = rightService;
     }
 
     /**
@@ -161,11 +152,11 @@ public class UserAuthServiceImpl implements IUserAuthService {
         }
 
         // check role
-        Right right = rightService.getById((long) params.getRoleId());
+        /* Right right = rightService.getById((long) params.getRoleId());
         if (right == null) {
             invitation.setInvited(InviteUserState.REJECTED);
             return invitation;
-        }
+        }*/
 
         // #0 check if user is already invited
         Optional<User> userCheck = userService.getOptionalUserByEmail(params.getEmail());
