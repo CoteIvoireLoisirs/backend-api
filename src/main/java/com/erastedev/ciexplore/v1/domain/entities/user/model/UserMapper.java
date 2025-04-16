@@ -8,15 +8,14 @@
  */
 package com.erastedev.ciexplore.v1.domain.entities.user.model;
 
-import com.erastedev.ciexplore.v1.application.request.user.UserSignUpRequest;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.application.request.user.SignUpRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Nullable;
 
 public class UserMapper {
     /**
-     * Maps a {@link UserSignUpRequest} to a {@link User} model.
+     * Maps a {@link SignUpRequest} to a {@link User} model.
      *
      * <p>If {@code searchUser} is not null, the method will copy the UUID and ID from the given user to the one being created.
      * If {@code passwordEncoder} is not null, the method will encrypt the password given in the request.
@@ -26,7 +25,7 @@ public class UserMapper {
      * @param passwordEncoder the password encoder to use, or null if no password should be set
      * @return the mapped user
      */
-    public static User mapUserSignUpRequestToUser(UserSignUpRequest param, @Nullable PasswordEncoder passwordEncoder, @Nullable User searchUser) {
+    public static User mapUserSignUpRequestToUser(SignUpRequest param, @Nullable PasswordEncoder passwordEncoder, @Nullable User searchUser) {
         User user = new User();
         user.setUsername(param.getUsername());
         user.setEmail(param.getEmail());

@@ -1,9 +1,3 @@
-/**
- * @Author: Eraste e.kouakou@omconsulting-group.com
- * @Date: 2024-10-27 13:04:59
- * @LastEditors: Eraste e.kouakou@omconsulting-group.com
- * @LastEditTime: 2024-10-27 13:07:14
- */
 package com.erastedev.ciexplore.v1.application.services.workspace;
 
 import com.erastedev.ciexplore.v1.application.request.workspace.WorkspaceSaveResponse;
@@ -11,7 +5,7 @@ import com.erastedev.ciexplore.v1.adapters.web.message.WorkspaceMessage;
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.files.FileNameBuilder;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.WorkSpaceStatus;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
@@ -57,8 +51,8 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
     @Autowired
     private UserServiceImpl userService;
 
-    @Autowired
-    private UserAuthServiceImpl userAuthService;
+    /* @Autowired
+    private AuthenticationServiceImpl userAuthService; */
 
     @Autowired
     FileStorageServiceImpl storageService;
@@ -176,7 +170,7 @@ public class WorkspaceServiceImpl extends AbstractCommonService<Workspace> imple
                     }).orElseGet(() -> {
                         // Otherwise, save the workspace
                         workspace.setAutoFields();
-                        workspace.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
+                        // workspace.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
 
                         repository.save(workspace);
                         return new WorkspaceSaveResponse(workspace, WorkspaceMessage.NONE, null);

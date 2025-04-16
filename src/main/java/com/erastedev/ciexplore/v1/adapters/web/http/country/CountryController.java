@@ -1,9 +1,9 @@
-package com.erastedev.ciexplore.v1.adapters.web.http;
+package com.erastedev.ciexplore.v1.adapters.web.http.country;
 
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
-import com.erastedev.ciexplore.v1.adapters.web.http.user.UserAuthController;
+import com.erastedev.ciexplore.v1.adapters.web.http.authentification.AuthenticationController;
 import com.erastedev.ciexplore.v1.adapters.web.message.user.UserCustomMessage;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
 import io.jsonwebtoken.io.IOException;
@@ -23,14 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping(ApiEndpoints.COUNTRIES)
+@RequestMapping(Endpoint.COUNTRIES)
 @Tag(name = "Country API", description = "Operations related to country data")
 public class CountryController {
 
     @Autowired
     private FileStorageServiceImpl fileService;
 
-    public Logger logger = LoggerFactory.getLogger(UserAuthController.class);
+    public Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     public ApiResponseService response;

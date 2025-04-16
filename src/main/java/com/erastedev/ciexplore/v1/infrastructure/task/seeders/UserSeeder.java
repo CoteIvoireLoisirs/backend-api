@@ -1,7 +1,7 @@
 package com.erastedev.ciexplore.v1.infrastructure.task.seeders;
 
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.ports.out.seeders.AbstractCommonSeeder;
 import com.erastedev.ciexplore.v1.domain.ports.out.seeders.SeederManager;
 import com.erastedev.ciexplore.v1.infrastructure.repository.user.UserRepository;

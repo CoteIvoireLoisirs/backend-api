@@ -2,13 +2,13 @@ package com.erastedev.ciexplore.v1.adapters.web.http.user;
 
 import com.erastedev.ciexplore.v1.application.validator.in.CommonValidation;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonError;
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ApiBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ApiBuilder;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @RestController
-@RequestMapping(ApiEndpoints.USERS)
+@RequestMapping(Endpoint.USERS)
 @Tag(name = "User API", description = "Operations related to User management")
 //  extends AbstractCommonController<User>
 public class UserController {

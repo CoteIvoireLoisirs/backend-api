@@ -7,7 +7,7 @@
 package com.erastedev.ciexplore.v1.domain.builders;
 
 import com.erastedev.ciexplore.v1.domain.entities.logs.LogEntity;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 

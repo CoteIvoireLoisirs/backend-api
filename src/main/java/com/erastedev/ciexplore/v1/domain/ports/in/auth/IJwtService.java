@@ -1,4 +1,4 @@
-package com.erastedev.ciexplore.v1.domain.ports.in.user.auth;
+package com.erastedev.ciexplore.v1.domain.ports.in.auth;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;

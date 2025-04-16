@@ -16,6 +16,14 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import java.io.IOException;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+    /**
+     * Handle an access denied exception. This implementation sends
+     * a HTTP 403 error with an empty body.
+     *
+     * @param request  the request which caused the exception
+     * @param response the response to populate with the error
+     * @param accessDeniedException the exception to handle
+     */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         // RestError restError = new RestError("Access denied", "403");

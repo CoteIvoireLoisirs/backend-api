@@ -1,11 +1,3 @@
-/**
- * @Author: Eraste e.kouakou@omconsulting-group.com
- * @Date: 2024-10-20 00:14:18
- * @LastEditors: Eraste e.kouakou@omconsulting-group.com
- * @LastEditTime: 2024-12-06 19:38:13
- * @FilePath: src/main/java/ca/deltagis/success/v1/application/services/user/auth/CustomUserDetailsService.java
- * @Description: 这是默认设置, 可以在设置》工具》File Description中进行配置
- */
 package com.erastedev.ciexplore.v1.application.services.user.auth;
 
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
@@ -36,22 +28,28 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<com.erastedev.ciexplore.v1.domain.entities.user.User> userSearch = userRepository.findByUsername(username);
+        try {
+            Optional<com.erastedev.ciexplore.v1.domain.entities.user.model.User> userSearch = userRepository.findByUsername(username);
 
-        List<String> roles = new ArrayList<>();
-        roles.add("USER"); // TODO : get roles from user service
+            List<String> roles = new ArrayList<>();
+            // TODO : get roles from user service
+            roles.add("USER");
 
-        logger.info("loadUserByUsername {}", userSearch);
-        if (userSearch.isEmpty()) {
+            logger.info("loadUserByUsername {}", userSearch);
+            if (userSearch.isEmpty()) {
+                throw new UsernameNotFoundException("User not found");
+            }
+
+            com.erastedev.ciexplore.v1.domain.entities.user.model.User user = userSearch.get();
+
+            return User.builder()
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .roles(roles.toArray(new String[0]))
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new UsernameNotFoundException("User not found");
         }
-
-        com.erastedev.ciexplore.v1.domain.entities.user.User user = userSearch.get();
-
-        return User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles(roles.toArray(new String[0]))
-                .build();
     }
 }

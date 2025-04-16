@@ -1,21 +1,22 @@
-package com.erastedev.ciexplore.v1.application.services.user;
+package com.erastedev.ciexplore.v1.application.services.auth;
 
-import com.erastedev.ciexplore.v1.adapters.web.exception.ExpiredInvitationCodeException;
-import com.erastedev.ciexplore.v1.adapters.web.exception.InvalidInvitationCodeException;
 import com.erastedev.ciexplore.v1.adapters.web.message.user.AuthLoginError;
 import com.erastedev.ciexplore.v1.application.request.user.*;
 import com.erastedev.ciexplore.v1.application.services.language.LangServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.notification.NotificationService;
+import com.erastedev.ciexplore.v1.application.services.user.CustomUserDetails;
+import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
 import com.erastedev.ciexplore.v1.application.services.user.auth.JwtServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
+import com.erastedev.ciexplore.v1.application.validator.out.user.CreateUserValidator;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserMapper;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
-import com.erastedev.ciexplore.v1.domain.ports.in.user.auth.IUserAuthService;
+import com.erastedev.ciexplore.v1.domain.ports.in.auth.IAuthenticationService;
 import com.erastedev.ciexplore.v1.infrastructure.repository.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +39,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserAuthServiceImpl implements IUserAuthService {
+public class AuthenticationServiceImpl implements IAuthenticationService {
 
     private final UserServiceImpl userService;
 
@@ -56,7 +58,10 @@ public class UserAuthServiceImpl implements IUserAuthService {
     @Autowired
     private LangServiceImpl langService;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserAuthServiceImpl.class);
+    @Autowired
+    private CreateUserValidator validator;
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     private final String SECRET_PASSWORD = "OuJj0qjFQ5596oBYKBGS8GC0aIuAip";
 
@@ -65,9 +70,9 @@ public class UserAuthServiceImpl implements IUserAuthService {
     private UserRepository userRepository;
 
     @Autowired
-    public UserAuthServiceImpl(
+    public AuthenticationServiceImpl(
             PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager,
+            @Lazy AuthenticationManager authenticationManager,
             UserServiceImpl userService,
             JwtServiceImpl jwtService
     ) {
@@ -113,24 +118,30 @@ public class UserAuthServiceImpl implements IUserAuthService {
      */
     @Transactional
     public AuthenticationResult authenticate(SignInRequest param) {
-        String username = param.getUsername();
-        String password = param.getPassword();
-        Optional<User> user = userService.getOptionalUserByEmailOrUsername(username);
+        try {
+            String username = param.getUsername();
+            String password = param.getPassword();
+            Optional<User> user = userService.getOptionalUserByEmailOrUsername(username);
 
-        logger.error("user {}", user);
+            logger.error("user {}", user);
 
-        if (user.isEmpty()) {
-            logger.error("User not found");
-            return AuthenticationResult.failure(AuthLoginError.USER_NOT_FOUND);
+            if (user.isEmpty()) {
+                logger.error("User not found");
+                return AuthenticationResult.failure(AuthLoginError.USER_NOT_FOUND);
+            }
+
+            if (!authenticateUser(username, password)) {
+                return AuthenticationResult.failure(AuthLoginError.INVALID_CREDENTIALS);
+            }
+
+            updateUserConnectionStatus(user.get());
+            String token = generateTokenForUser(user.get());
+            return AuthenticationResult.success(token);
+        } catch (Exception e) {
+            logger.error("Error authenticating user", e);
+            e.printStackTrace();
+            return AuthenticationResult.failure(AuthLoginError.INTERNAL_ERROR);
         }
-
-        if (!authenticateUser(username, password)) {
-            return AuthenticationResult.failure(AuthLoginError.INVALID_CREDENTIALS);
-        }
-
-        updateUserConnectionStatus(user.get());
-        String token = generateTokenForUser(user.get());
-        return AuthenticationResult.success(token);
     }
 
     @Override
@@ -192,65 +203,35 @@ public class UserAuthServiceImpl implements IUserAuthService {
         return invitation;
     }
 
-    /**
-     * Saves a user to the database, encrypting their password first.
-     *
-     * @param user the user to be saved
-     * @return the saved user
-     */
-    public UserRegisterAttempt registerUser(UserSignUpRequest user, String tokenInvitation) {
-        // initialize username
-        UserRegisterAttempt attempt = UserRegisterAttempt.builder()
-                .user(UserMapper.mapUserSignUpRequestToUser(user, null, null))
-                .state(UserRegisterState.USER_NOT_FOUND)
-                .success(false)
-                .build();
-
-        // check email, by token
-        String emailExtract = jwtService.extractUsername(tokenInvitation);
-        if (emailExtract != null && !emailExtract.equals(user.getEmail())
-                || jwtService.extractExpiration(tokenInvitation).before(Date.from(java.time.Instant.now()))) {
-            attempt.setState(UserRegisterState.INVALID_TOKEN);
-            return attempt;
-        }
-
-        // check if user already registered
-        Optional<User> userCheck = userService.getOptionalUserByEmail(user.getEmail());
-        if (userCheck.isPresent()) {
-//            if (userCheck.get().getInvitationState().equals(UserInvitationState.ACCEPTED.toString())) {
-//                attempt.setState(UserRegisterState.ALREADY_REGISTERED);
-//                return attempt;
-//            }
-        }
-
+    public UserRegisterAttempt registerUser(SignUpRequest signUpRequest) {
         try {
-            // * 1 check if user already exists in the database
-            if (userService.getOptionalUserByEmail(user.getEmail()).isEmpty()) {
-                attempt.setState(UserRegisterState.USER_NOT_FOUND);
-                return attempt;
+            UserRegisterAttempt registerAttempt = validator.validateRegisterAttempt(signUpRequest);
+
+            if (registerAttempt.getState() != null) {
+                return registerAttempt;
             }
 
-            // * 3 Attempt to register the user
-            User searchUser = userService.getUserByEmail(user.getEmail());
-            User registration = userService.save(UserMapper.mapUserSignUpRequestToUser(user, passwordEncoder, searchUser));
-            if (registration != null) {
-                attempt = UserRegisterAttempt.builder()
-                        .user(registration)
+            try {
+                User newUser = userService.save(signUpRequest.buildUser());
+
+                registerAttempt = UserRegisterAttempt.builder()
+                        .user(newUser)
                         .state(UserRegisterState.SUCCESS)
                         .success(true)
                         .build();
-            } else {
-                attempt.setState(UserRegisterState.INVALID_EMAIL);
+            } catch (Exception e) {
+                registerAttempt.setState(UserRegisterState.INVALID_EMAIL);
             }
-        } catch (InvalidInvitationCodeException e) {
-            attempt.setState(UserRegisterState.INVALID_INVITATION_CODE);
-        } catch (ExpiredInvitationCodeException e) {
-            attempt.setState(UserRegisterState.EXPIRED_INVITATION_CODE);
-        } catch (Exception e) {
-            attempt.setState(UserRegisterState.INVALID_EMAIL);
-        }
 
-        return attempt;
+            return registerAttempt;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return UserRegisterAttempt.builder()
+                    .user(null)
+                    .state(UserRegisterState.SOMETHING_WENT_WRONG)
+                    .success(false)
+                    .build();
+        }
     }
 
     /**
@@ -263,7 +244,7 @@ public class UserAuthServiceImpl implements IUserAuthService {
      * met
      */
     @Override
-    public User registerFirstUser(UserSignUpRequest admin, String secretKey) {
+    public User registerFirstUser(SignUpRequest admin, String secretKey) {
         // * 1 check if not user exists in the database
         List<User> users = userService.getAll();
         if (users.isEmpty() && secretKey.equals(SECRET_PASSWORD)) {

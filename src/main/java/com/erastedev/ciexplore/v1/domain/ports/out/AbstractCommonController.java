@@ -3,7 +3,7 @@ package com.erastedev.ciexplore.v1.domain.ports.out;
 
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
 import com.erastedev.ciexplore.v1.application.services.logs.LogServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 import com.erastedev.ciexplore.v1.domain.models.logs.Loggable;
@@ -46,7 +46,7 @@ public abstract class AbstractCommonController<T extends ICommonEntity<T>> imple
     private UserServiceImpl userServiceImpl;
 
     @Autowired
-    private UserAuthServiceImpl authService;
+    private AuthenticationServiceImpl authService;
 
     @Autowired
     private LogServiceImpl<T> logService;

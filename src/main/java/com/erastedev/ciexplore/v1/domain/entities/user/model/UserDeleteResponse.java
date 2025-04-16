@@ -8,7 +8,6 @@
  */
 package com.erastedev.ciexplore.v1.domain.entities.user.model;
 
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
 import lombok.Builder;
 import lombok.Data;
 

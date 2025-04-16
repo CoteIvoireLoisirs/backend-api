@@ -1,6 +1,6 @@
 package com.erastedev.ciexplore.v1.application.services.user.auth;
 
-import com.erastedev.ciexplore.v1.domain.ports.in.user.auth.IJwtService;
+import com.erastedev.ciexplore.v1.domain.ports.in.auth.IJwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

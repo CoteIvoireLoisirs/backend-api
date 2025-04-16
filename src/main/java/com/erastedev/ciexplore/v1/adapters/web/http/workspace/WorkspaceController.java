@@ -25,16 +25,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ApiBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ApiBuilder;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ErrorDetailBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ErrorDetailBuilder;
 import com.erastedev.ciexplore.v1.application.request.workspace.WorkspaceSaveResponse;
 import com.erastedev.ciexplore.v1.adapters.web.message.WorkspaceMessage;
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.logs.LogServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.WorkSpaceStatus;
@@ -54,14 +54,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.Getter;
 
 @RestController
-@RequestMapping(ApiEndpoints.WORKSPACES)
+@RequestMapping(Endpoint.WORKSPACES)
 @Tag(name = "Workspace API", description = "Operations related to the Right")
 public class WorkspaceController extends AbstractCommonController<Workspace> {
     @Autowired
     private WorkspaceServiceImpl service;
 
     @Autowired
-    private UserAuthServiceImpl userAuthService;
+    private AuthenticationServiceImpl userAuthService;
 
     @Getter
     private Logger logger = LoggerFactory.getLogger(WorkspaceController.class);
@@ -216,7 +216,7 @@ public class WorkspaceController extends AbstractCommonController<Workspace> {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(ApiEndpoints.WORKSPACE_CHANGE_IMAGE)
+    @PostMapping(Endpoint.WORKSPACE_CHANGE_IMAGE)
     public ResponseEntity<com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse<FileUploadResponse>> uploadImage(
             @io.swagger.v3.oas.annotations.parameters.RequestBody() MultipartFile file,
             @PathVariable String code) {
@@ -311,7 +311,7 @@ public class WorkspaceController extends AbstractCommonController<Workspace> {
             @ApiResponse(responseCode = "404", description = "Entity not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @PutMapping(ApiEndpoints.ACTIVATED_WORKSPACE)
+    @PutMapping(Endpoint.ACTIVATED_WORKSPACE)
     public ResponseEntity<com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse<Workspace>> activate(
             @Parameter(description = "code of the workspace to be activated", required = true) @PathVariable String code) {
 
@@ -350,7 +350,7 @@ public class WorkspaceController extends AbstractCommonController<Workspace> {
             @ApiResponse(responseCode = "404", description = "Entity not found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @PutMapping(ApiEndpoints.DISABLE_WORKSPACE)
+    @PutMapping(Endpoint.DISABLE_WORKSPACE)
     public ResponseEntity<com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse<Workspace>> disable(
             @Parameter(description = "code of the workspace to be Disable", required = true) @PathVariable String code) {
 
@@ -387,7 +387,7 @@ public class WorkspaceController extends AbstractCommonController<Workspace> {
             @ApiResponse(responseCode = "200", description = "Entity found successfully"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @GetMapping(ApiEndpoints.PUBLIC_WORKSPACE)
+    @GetMapping(Endpoint.PUBLIC_WORKSPACE)
     public ResponseEntity<com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse<List<WorkspacePublic>>> getAllWithOutAuthorization() {
         try {
             List<WorkspacePublic> entities = service.getWorkspaceWithOutAuthorization();

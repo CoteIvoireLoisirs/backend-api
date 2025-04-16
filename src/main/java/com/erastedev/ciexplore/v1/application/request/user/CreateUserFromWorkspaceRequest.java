@@ -9,7 +9,7 @@
 package com.erastedev.ciexplore.v1.application.request.user;
 
 import com.erastedev.ciexplore.v1.adapters.web.message.user.UserCustomMessage;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import lombok.Builder;
 import lombok.Data;
 

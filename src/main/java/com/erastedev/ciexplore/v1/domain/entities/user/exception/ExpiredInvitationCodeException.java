@@ -4,7 +4,7 @@
  * @LastEditors: Eraste e.kouakou@omconsulting-group.com
  * @LastEditTime: 2024-10-29 20:01:29
  */
-package com.erastedev.ciexplore.v1.adapters.web.exception;
+package com.erastedev.ciexplore.v1.domain.entities.user.exception;
 
 public class ExpiredInvitationCodeException extends RuntimeException {
     public ExpiredInvitationCodeException(String message) {

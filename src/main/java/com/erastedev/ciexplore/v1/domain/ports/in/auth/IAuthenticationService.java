@@ -1,9 +1,9 @@
-package com.erastedev.ciexplore.v1.domain.ports.in.user.auth;
+package com.erastedev.ciexplore.v1.domain.ports.in.auth;
 
 import com.erastedev.ciexplore.v1.application.request.user.InviteUserRequest;
 import com.erastedev.ciexplore.v1.application.request.user.InviteUserResponse;
 import com.erastedev.ciexplore.v1.application.request.user.SignInRequest;
-import com.erastedev.ciexplore.v1.application.request.user.UserSignUpRequest;
+import com.erastedev.ciexplore.v1.application.request.user.SignUpRequest;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
-public interface IUserAuthService {
+public interface IAuthenticationService {
     /**
      * Finds a user by their username.
      *
@@ -57,7 +57,7 @@ public interface IUserAuthService {
      * @param user the user to be saved
      * @return the saved user
      */
-    UserRegisterAttempt registerUser(UserSignUpRequest user, String tokenInvitation);
+    UserRegisterAttempt registerUser(SignUpRequest user);
 
     /**
      * Registers the first user in the system, typically an admin.
@@ -65,7 +65,7 @@ public interface IUserAuthService {
      * @param admin the user to be registered as the first user
      * @return the registered user
      */
-    User registerFirstUser(UserSignUpRequest admin, String secretKey);
+    User registerFirstUser(SignUpRequest admin, String secretKey);
 
     /**
      * Sends a password recovery code to the email address associated with the provided email.

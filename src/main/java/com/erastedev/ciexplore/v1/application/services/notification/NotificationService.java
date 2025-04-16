@@ -10,7 +10,7 @@ import com.erastedev.ciexplore.v1.application.ports.IEmailService;
 import com.erastedev.ciexplore.v1.application.services.notification.message.GuestEmail;
 import com.erastedev.ciexplore.v1.application.services.notification.message.RecoveryCodeEmail;
 import com.erastedev.ciexplore.v1.application.services.notification.message.RegisterConfirmationEmailMessage;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.email.EmailDetails;
 
 /**

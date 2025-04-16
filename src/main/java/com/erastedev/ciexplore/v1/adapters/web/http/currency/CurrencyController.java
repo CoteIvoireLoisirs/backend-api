@@ -2,7 +2,7 @@ package com.erastedev.ciexplore.v1.adapters.web.http.currency;
 
 import java.util.List;
 
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ApiBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ApiBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
 
 import com.erastedev.ciexplore.v1.application.services.currency.CurrencyServiceImpl;
@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @RestController
-@RequestMapping(ApiEndpoints.CURRENCY)
+@RequestMapping(Endpoint.CURRENCY)
 @Tag(name = "Currency API", description = "Operations related to the Right")
 public class CurrencyController {
 

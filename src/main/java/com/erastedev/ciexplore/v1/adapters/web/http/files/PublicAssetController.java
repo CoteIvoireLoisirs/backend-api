@@ -1,6 +1,6 @@
 package com.erastedev.ciexplore.v1.adapters.web.http.files;
 
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(ApiEndpoints.PUBLIC_ASSET_ENDPOINT)
+@RequestMapping(Endpoint.PUBLIC_ASSET_ENDPOINT)
 @Tag(name = "Public Asset API", description = "Operations related to public assets")
 public class PublicAssetController {
     String ASSET_PATH = "/assets/";

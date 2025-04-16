@@ -1,15 +1,16 @@
-package com.erastedev.ciexplore.v1.adapters.web.http.user;
+package com.erastedev.ciexplore.v1.adapters.web.http.authentification;
 
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ApiBuilder;
 import com.erastedev.ciexplore.v1.application.request.user.InviteUserRequest;
 import com.erastedev.ciexplore.v1.application.request.user.InviteUserResponse;
-import com.erastedev.ciexplore.v1.application.request.user.UserSignInRequest;
-import com.erastedev.ciexplore.v1.application.request.user.UserSignUpRequest;
-import com.erastedev.ciexplore.v1.adapters.web.message.user.UserCustomMessage;
+import com.erastedev.ciexplore.v1.application.request.user.SignInRequest;
+import com.erastedev.ciexplore.v1.application.request.user.SignUpRequest;
 import com.erastedev.ciexplore.v1.application.services.logs.LogServiceImpl;
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
@@ -18,8 +19,6 @@ import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 import com.erastedev.ciexplore.v1.domain.models.logs.Loggable;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
-import com.erastedev.ciexplore.v1.domain.ports.in.user.IUserService;
-import com.erastedev.ciexplore.v1.domain.ports.in.user.auth.IUserAuthService;
 import com.erastedev.ciexplore.v1.infrastructure.utils.HttpRequestUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,27 +27,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
 @RestController
-@RequestMapping(ApiEndpoints.AUTH)
+@RequestMapping(Endpoint.AUTH)
 @Tag(name = "User Authentication API", description = "Operations related to User Authentication")
-public class UserAuthController {
+public class AuthenticationController {
     @Autowired
-    public UserAuthServiceImpl UserAuthService;
+    public AuthenticationServiceImpl authService;
 
     @Autowired
-    public IUserService userService;
+    public UserServiceImpl userService;
 
+    @Lazy
     @Autowired
-    public IUserAuthService userAuthService;
-
-    public final AuthenticationManager authenticationManager;
+    public AuthenticationManager authenticationManager;
 
     @Autowired
     public HttpRequestUtil httpRequestUtil;
@@ -56,60 +53,53 @@ public class UserAuthController {
     @Autowired
     public LogServiceImpl auditService;
 
-    public Logger logger = LoggerFactory.getLogger(UserAuthController.class);
+    public Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     public ApiResponseService response;
-
-    public UserAuthController(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 
     public Class<?> className() {
         return this.getClass();
     }
 
     /**
-     * Authenticates a user with the provided username and password.
+     * Authenticates a request with the provided username and password.
      * If authentication is successful, returns a response with the authentication
-     * token and user details.
+     * token and request details.
      * If authentication fails, returns an error response indicating invalid
      * credentials.
      * Handles exceptions and returns an internal server error response in case of
      * unexpected errors.
      *
-     * @param user the UserSignInRequest containing the username and password
+     * @param request the UserSignInRequest containing the username and password
      * @return a ResponseEntity containing an ApiResponse with the authentication
-     * token and user details, or an error message
+     * token and request details, or an error message
      */
-    @PostMapping(ApiEndpoints.LOGIN_USER)
-    @Operation(summary = "Login a user", description = "Logs in a user and returns the authentication token")
+    @PostMapping(Endpoint.LOGIN_USER)
+    @Operation(summary = "Login a request", description = "Logs in a request and returns the authentication token")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User logged in successfully"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Invalid credentials"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @Loggable(action = AuditLogActionCode.AUTH_LOGIN_SUCCESS, message = "User logged in", actionFailed = AuditLogActionCode.AUTH_LOGIN_FAILED)
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody UserSignInRequest user) {
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> login(@RequestBody SignInRequest request) {
         try {
             AuthenticationResponse authResponse = new AuthenticationResponse(null, null);
-            AuthenticationResult result = userAuthService.authenticate(user);
+            AuthenticationResult result = authService.authenticate(request);
 
             if (result.isSuccess()) {
-                User userAttempt = userService.getUserByUsername(user.getUsername());
+                User userAttempt = userService.getUserByUsername(request.getUsername());
                 AuthenticationRecord record = new AuthenticationRecord(result.getToken(), "Bearer");
 
-                authResponse = userAuthService.buildAuthenticationResponse(record, userAttempt);
+                authResponse = authService.buildAuthenticationResponse(record, userAttempt);
                 return response.success("User logged in successfully", authResponse, HttpStatus.OK);
             }
 
             authResponse.setError(result.getError());
             return response.error(result.getError().getMessage(), result.getError().getMessage(), null, HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            e.printStackTrace();
-            HashMap<String, String> errorDetails = new HashMap<>();
-            errorDetails.put("message", e.getMessage());
-            return response.error("Error logging in user", UserCustomMessage.INTERNAL_ERROR.getMessage(), errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ApiBuilder<AuthenticationResponse>().internalServerError("Error logging in request", e);
         }
     }
 
@@ -134,12 +124,12 @@ public class UserAuthController {
      * or an error message if the invitation fails
      * @throws Exception if there is an error during the invitation process
      */
-    @PostMapping(ApiEndpoints.INVITE_USER)
+    @PostMapping(Endpoint.INVITE_USER)
     @Operation(summary = "Send user invitation to create an account", description = "Sends an invitation to create an account with the provided email address")
     public ResponseEntity<ApiResponse<InviteUserResponse>> inviteUser(@RequestBody InviteUserRequest params,
                                                                       HttpServletRequest request) {
         try {
-            InviteUserResponse data = userAuthService.inviteUser(params);
+            InviteUserResponse data = authService.inviteUser(params);
             return switch (data.getInvited()) {
                 case ALREADY_INVITED -> {
                     yield response.error("User already invited", "Email already used", null, HttpStatus.BAD_REQUEST);
@@ -174,19 +164,19 @@ public class UserAuthController {
      * or an error message if registration fails
      * @throws Exception if there is an error during the registration process
      */
-    @PostMapping(ApiEndpoints.REGISTER_USER)
+    @PostMapping(Endpoint.REGISTER_USER)
     @Operation(summary = "Register a new user", description = "Creates a new user account and returns the created user")
     public ResponseEntity<ApiResponse<User>> registerUser(
-            @RequestBody UserSignUpRequest user, @RequestParam String token, HttpServletRequest request) {
+            @RequestBody SignUpRequest user) {
         try {
             String httpMessage = "";
             HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-            UserRegisterAttempt attempt = userAuthService.registerUser(user, token);
+            UserRegisterAttempt attempt = authService.registerUser(user);
             UserRegisterState registrationState = attempt.getState();
 
             logger.info("User registration {}", registrationState);
             if (registrationState.equals(UserRegisterState.SUCCESS)) {
-                userAuthService.SendRegisterConfirmationEmailMessage(user.getEmail());
+                authService.SendRegisterConfirmationEmailMessage(user.getEmail());
                 return response.success("User registered successfully", attempt.getUser(), HttpStatus.CREATED);
             } else {
                 httpStatus = switch (registrationState) {
@@ -229,14 +219,14 @@ public class UserAuthController {
      * @return the registered user if successful, or an error response if the
      * conditions are not met
      */
-    @PostMapping(ApiEndpoints.REGISTER_FIRST_USER)
+    @PostMapping(Endpoint.REGISTER_FIRST_USER)
     @Operation(summary = "If don't have any user, register first user", description = "Create a new user account and returns the created user")
     public ResponseEntity<ApiResponse<User>> registerFirstUser(
-            @RequestBody UserSignUpRequest user, @RequestParam String secretKey, HttpServletRequest request) {
+            @RequestBody SignUpRequest user, @RequestParam String secretKey, HttpServletRequest request) {
         try {
-            User savedUser = userAuthService.registerFirstUser(user, secretKey);
+            User savedUser = authService.registerFirstUser(user, secretKey);
             if (savedUser != null) {
-                userAuthService.SendRegisterConfirmationEmailMessage(savedUser.getEmail());
+                authService.SendRegisterConfirmationEmailMessage(savedUser.getEmail());
                 return response.success("User registered successfully", savedUser, HttpStatus.CREATED);
             }
             return response.error("Error registering user", "Error registering user", null, HttpStatus.BAD_REQUEST);
@@ -261,13 +251,13 @@ public class UserAuthController {
      * password recovery request
      * @throws Exception if there is an error sending the recovery code
      */
-    @PostMapping(ApiEndpoints.FORGET_PASSWORD)
+    @PostMapping(Endpoint.FORGET_PASSWORD)
     @Operation(summary = "Request password recovery", description = "Sends a recovery code to the user's email for password recovery")
     public ResponseEntity<ApiResponse<Boolean>> requestPasswordRecovery(
             @RequestParam String email, HttpServletRequest request
     ) {
         try {
-            boolean emailSent = userAuthService.sendRecoveryCode(email);
+            boolean emailSent = authService.sendRecoveryCode(email);
             if (emailSent) {
                 return response.success("Recovery code sent successfully", true, HttpStatus.OK);
             }
@@ -296,12 +286,12 @@ public class UserAuthController {
      * @return a ResponseEntity containing an ApiResponse with the verification
      * result
      */
-    @PostMapping(ApiEndpoints.VERIFY_RECOVERY_CODE)
+    @PostMapping(Endpoint.VERIFY_RECOVERY_CODE)
     @Operation(summary = "Verify password recovery code", description = "Verifies if the provided recovery code is valid")
     public ResponseEntity<ApiResponse<String>> verifyRecoveryCode(
             @RequestParam String email, @RequestParam String code, HttpServletRequest request) {
         try {
-            boolean isValid = userAuthService.verifyRecoveryCode(email, code);
+            boolean isValid = authService.verifyRecoveryCode(email, code);
             if (isValid) {
                 return response.success("Recovery code verified successfully", "Code is valid.", HttpStatus.OK);
             }
@@ -334,14 +324,14 @@ public class UserAuthController {
      * @param newPassword the new password to set
      * @return a ResponseEntity containing an ApiResponse with the reset result
      */
-    @PostMapping(ApiEndpoints.RESET_PASSWORD)
+    @PostMapping(Endpoint.RESET_PASSWORD)
     @Operation(summary = "Reset user password", description = "Allows the user to reset their password using a valid recovery code")
     public ResponseEntity<ApiResponse<String>> resetPassword(
             @RequestParam String email,
             @RequestParam String code,
             @RequestParam String newPassword, HttpServletRequest request) {
         try {
-            boolean isReset = userAuthService.resetPassword(email, code, newPassword);
+            boolean isReset = authService.resetPassword(email, code, newPassword);
             if (isReset) {
                 return response.success("Password reset successfully", "Your password has been updated.", HttpStatus.OK);
             }
@@ -369,10 +359,10 @@ public class UserAuthController {
      * @param token the expired JWT token to refresh
      * @return a ResponseEntity containing an ApiResponse with the new JWT token
      */
-    @PostMapping(ApiEndpoints.REFRESH_TOKEN)
+    @PostMapping(Endpoint.REFRESH_TOKEN)
     @Operation(summary = "Refresh JWT token", description = "Refreshes the JWT token based on an expired token")
     public ResponseEntity<ApiResponse<String>> refreshToken(@RequestParam String token) {
-        String newToken = UserAuthService.refreshToken(token);
+        String newToken = authService.refreshToken(token);
         return response.success("Password reset successfully", newToken, HttpStatus.OK);
     }
 
@@ -389,19 +379,19 @@ public class UserAuthController {
      * @return a ResponseEntity containing an ApiResponse with the status of the
      * logout operation
      */
-    @PostMapping(ApiEndpoints.LOGOUT_USER)
+    @PostMapping(Endpoint.LOGOUT_USER)
     @Operation(summary = "Logout user", description = "Logs out the current user")
     public ResponseEntity<ApiResponse<Boolean>> logout() {
-        boolean logoutStatus = UserAuthService.logoutUser(null, null);
+        boolean logoutStatus = authService.logoutUser(null, null);
         return response.success("Logout successful", logoutStatus, HttpStatus.OK);
     }
 
-    @GetMapping(ApiEndpoints.USER_DETAIL)
+    @GetMapping(Endpoint.USER_DETAIL)
     @Operation(summary = "retrieve information from the logged in user", description = "this api allows you to retrieve information from the logged in user")
     public ResponseEntity<ApiResponse<User>> getUser() {
 
         try {
-            User user = UserAuthService.getCurrentLoggedUser();
+            User user = authService.getCurrentLoggedUser();
             if (user != null) {
                 // Exclure le champ sensible
                 user.setPassword(null);

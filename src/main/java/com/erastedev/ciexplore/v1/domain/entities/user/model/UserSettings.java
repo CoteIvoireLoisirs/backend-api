@@ -1,4 +1,4 @@
-package com.erastedev.ciexplore.v1.domain.entities.user;
+package com.erastedev.ciexplore.v1.domain.entities.user.model;
 
 import com.erastedev.ciexplore.v1.domain.models.language.LangCodeEnum;
 import com.erastedev.ciexplore.v1.domain.ports.out.AbstractCommonEntity;

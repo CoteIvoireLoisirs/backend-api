@@ -1,6 +1,6 @@
 package com.erastedev.ciexplore.v1.infrastructure.repository.user;
 
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.ports.in.ICommonRepository;
 import org.springframework.stereotype.Repository;
 

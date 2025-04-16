@@ -4,7 +4,7 @@
  * @LastEditors: Eraste e.kouakou@omconsulting-group.com
  * @LastEditTime: 2024-12-04 13:56:45
  */
-package com.erastedev.ciexplore.v1.adapters.web.api.builder;
+package com.erastedev.ciexplore.v1.adapters.web.api.service.builder;
 
 import lombok.Data;
 

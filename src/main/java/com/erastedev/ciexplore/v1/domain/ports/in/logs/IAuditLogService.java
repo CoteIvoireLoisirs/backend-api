@@ -6,7 +6,7 @@
  */
 package com.erastedev.ciexplore.v1.domain.ports.in.logs;
 
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 
 public interface IAuditLogService<T> {

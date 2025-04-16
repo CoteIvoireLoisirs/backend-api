@@ -1,7 +1,7 @@
 package com.erastedev.ciexplore.v1.domain.ports.in;
 
 
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 
 import java.util.List;
 import java.util.Optional;

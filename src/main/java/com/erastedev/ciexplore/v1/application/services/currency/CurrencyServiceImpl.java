@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 
 import com.erastedev.ciexplore.v1.domain.entities.currency.Currency;
 import com.erastedev.ciexplore.v1.domain.ports.in.currency.IcurrencyService;
@@ -33,7 +33,7 @@ public class CurrencyServiceImpl extends AbstractCommonService<Currency> impleme
     private CurrencyRepository repository;
 
     @Autowired
-    private UserAuthServiceImpl userAuthService;
+    private AuthenticationServiceImpl userAuthService;
 
     FilePathManager pathManager;
 

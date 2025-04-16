@@ -8,9 +8,10 @@
  */
 package com.erastedev.ciexplore.v1.application.validator.out.user;
 
+import com.erastedev.ciexplore.v1.application.request.user.SignUpRequest;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.WorkSpaceStatus;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
@@ -62,6 +63,34 @@ public class CreateUserValidator {
             return null;
         } catch (Exception e) {
             logger.error("userValidation {}", e.getMessage());
+            return UserRegisterAttempt.builder().success(false).state(UserRegisterState.SOMETHING_WENT_WRONG).build();
+        }
+    }
+
+    public UserRegisterAttempt validateRegisterAttempt(SignUpRequest signUpRequest) {
+        try {
+            if (signUpRequest == null || signUpRequest.getEmail() == null || signUpRequest.getUsername() == null) {
+                return UserRegisterAttempt.builder().success(false).state(UserRegisterState.USER_NOT_FOUND).build();
+            }
+
+            if (signUpRequest.getPassword() == null) {
+                return UserRegisterAttempt.builder().success(false).state(UserRegisterState.PASSWORD_NOT_FOUND).build();
+            }
+
+            User checkUsername = userService.getUserByUsername(signUpRequest.getUsername());
+            if (checkUsername != null) {
+                return UserRegisterAttempt.builder().success(false).state(UserRegisterState.USERNAME_ALREADY_USED).build();
+            }
+
+            User checkEmail = userService.getUserByEmail(signUpRequest.getEmail());
+            if (checkEmail != null) {
+                return UserRegisterAttempt.builder().success(false).state(UserRegisterState.EMAIL_ALREADY_USED).build();
+            }
+
+            return null;
+        } catch (Exception e) {
+            logger.error("userValidation {}", e.getMessage());
+            e.printStackTrace();
             return UserRegisterAttempt.builder().success(false).state(UserRegisterState.SOMETHING_WENT_WRONG).build();
         }
     }

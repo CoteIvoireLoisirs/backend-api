@@ -8,10 +8,10 @@
 package com.erastedev.ciexplore.v1.application.services.logs;
 
 import com.erastedev.ciexplore.v1.adapters.web.message.logs.LogDefaultMessage;
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.domain.builders.LogEntityBuilder;
 import com.erastedev.ciexplore.v1.domain.entities.logs.LogEntity;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 import com.erastedev.ciexplore.v1.domain.ports.in.ICommonRepository;
 import com.erastedev.ciexplore.v1.domain.ports.in.logs.IAuditLogService;
@@ -31,7 +31,7 @@ public class LogServiceImpl<T> extends AbstractCommonService<LogEntity> implemen
     private LogRepository repository;
 
     @Autowired
-    UserAuthServiceImpl userAuthService;
+    AuthenticationServiceImpl userAuthService;
 
     Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);
 

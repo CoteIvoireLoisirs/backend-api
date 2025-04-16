@@ -3,7 +3,7 @@ package com.erastedev.ciexplore.v1.domain.ports.in.user;
 
 import com.erastedev.ciexplore.v1.application.validator.in.CommonValidation;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonError;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserDeleteResponse;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;

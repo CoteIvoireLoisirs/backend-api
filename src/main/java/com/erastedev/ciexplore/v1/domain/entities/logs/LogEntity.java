@@ -1,6 +1,6 @@
 package com.erastedev.ciexplore.v1.domain.entities.logs;
 
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
 import com.erastedev.ciexplore.v1.domain.ports.out.AbstractCommonEntity;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;

@@ -1,8 +1,9 @@
 package com.erastedev.ciexplore.v1.application.services.user;
 
-import com.erastedev.ciexplore.v1.application.request.user.UserSignInRequest;
+import com.erastedev.ciexplore.v1.application.request.user.SignInRequest;
 import com.erastedev.ciexplore.v1.adapters.web.message.user.AuthLoginError;
 import com.erastedev.ciexplore.v1.application.mock.UserMock;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class UserAuthServiceImplTest {
     private UserServiceImpl userService;
 
     @InjectMocks
-    private UserAuthServiceImpl userAuthService;
+    private AuthenticationServiceImpl userAuthService;
 
     @Before
     public void setup() {
@@ -32,7 +33,7 @@ public class UserAuthServiceImplTest {
 
     @Test
     public void testAuthenticate_UserNotFound() {
-        UserSignInRequest request = new UserSignInRequest();
+        SignInRequest request = new SignInRequest();
         request.setUsername(UserMock.notRegisteredUser().getUsername());
         request.setPassword(UserMock.notRegisteredUser().getPassword());
 
@@ -45,7 +46,7 @@ public class UserAuthServiceImplTest {
 
     @Test
     public void testAuthenticate_AuthenticationSuccess() {
-        UserSignInRequest request = new UserSignInRequest();
+        SignInRequest request = new SignInRequest();
         request.setUsername(UserMock.user().getUsername());
         request.setPassword(UserMock.user().getPassword());
 

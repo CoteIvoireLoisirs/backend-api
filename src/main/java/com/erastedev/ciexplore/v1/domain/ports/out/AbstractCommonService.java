@@ -1,7 +1,7 @@
 package com.erastedev.ciexplore.v1.domain.ports.out;
 
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.ports.in.ICommonEntity;
 import com.erastedev.ciexplore.v1.domain.ports.in.ICommonService;
 import com.erastedev.ciexplore.v1.domain.ports.in.logs.Logs;

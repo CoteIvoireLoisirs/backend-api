@@ -1,7 +1,7 @@
 package com.erastedev.ciexplore.v1.infrastructure.config.security;
 
 import com.erastedev.ciexplore.v1.adapters.web.api.config.WebClient;
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.http.CustomAccessDeniedHandler;
 import com.erastedev.ciexplore.v1.application.services.user.auth.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -59,24 +59,24 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                ApiEndpoints.REGISTER_FIRST_USER_ENDPOINT,
-                                ApiEndpoints.LOGIN_USER_ENDPOINT,
-                                ApiEndpoints.REGISTER_USER_ENDPOINT,
-                                ApiEndpoints.VERIFY_RECOVERY_CODE_ENDPOINT,
-                                ApiEndpoints.RESET_PASSWORD_ENDPOINT,
-                                ApiEndpoints.FORGET_PASSWORD_ENDPOINT,
+                                Endpoint.REGISTER_FIRST_USER_ENDPOINT,
+                                Endpoint.LOGIN_USER_ENDPOINT,
+                                Endpoint.REGISTER_USER_ENDPOINT,
+                                Endpoint.VERIFY_RECOVERY_CODE_ENDPOINT,
+                                Endpoint.RESET_PASSWORD_ENDPOINT,
+                                Endpoint.FORGET_PASSWORD_ENDPOINT,
 
                                 // TODO : remove, must be authorized by JWT
-                                ApiEndpoints.INVITE_USER_ENDPOINT,
-                                ApiEndpoints.REFRESH_TOKEN_ENDPOINT,
-                                ApiEndpoints.PUBLIC_WORKSPACE_ENDPOINT,
-                                ApiEndpoints.PUBLIC_ASSET_ENDPOINT + "/**",
-                                ApiEndpoints.I18N + "/**",
+                                Endpoint.INVITE_USER_ENDPOINT,
+                                Endpoint.REFRESH_TOKEN_ENDPOINT,
+                                Endpoint.PUBLIC_WORKSPACE_ENDPOINT,
+                                Endpoint.PUBLIC_ASSET_ENDPOINT + "/**",
+                                Endpoint.I18N + "/**",
                                 // TODO : remove, must be authorized by JWT
-                                ApiEndpoints.SWAGGER_UI,
-                                ApiEndpoints.SWAGGER_UI_PATH,
-                                ApiEndpoints.SWAGGER_V3_API_DOCS,
-                                ApiEndpoints.LOGOUT_USER_ENDPOINT,
+                                Endpoint.SWAGGER_UI,
+                                Endpoint.SWAGGER_UI_PATH,
+                                Endpoint.SWAGGER_V3_API_DOCS,
+                                Endpoint.LOGOUT_USER_ENDPOINT,
 
                                 "/uploads/**"
                         )

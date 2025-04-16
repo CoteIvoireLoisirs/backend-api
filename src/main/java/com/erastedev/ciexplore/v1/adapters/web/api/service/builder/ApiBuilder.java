@@ -6,7 +6,7 @@
  * @FilePath: src/main/java/ca/deltagis/success/v1/adapters/web/api/ApiResponseBuilder.java
  * @Description: 这是默认设置, 可以在设置》工具》File Description中进行配置
  */
-package com.erastedev.ciexplore.v1.adapters.web.api.builder;
+package com.erastedev.ciexplore.v1.adapters.web.api.service.builder;
 
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
 import org.slf4j.Logger;
@@ -149,21 +149,26 @@ public class ApiBuilder<T> {
     }
 
     public ResponseEntity<ApiResponse<T>> internalServerError(String message, Exception e) {
-        e.printStackTrace();
+        try {
+            e.printStackTrace();
 
-        this.status = HttpStatus.INTERNAL_SERVER_ERROR.value();
-        this.success = false;
-        this.error = error;
-        this.message = message;
+            this.status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            this.success = false;
+            this.error = error;
+            this.message = message;
 
-        // If errorDetails is null, create a new ErrorDetailBuilder and add the message
-        if (this.errorDetails == null) {
-            this.errorDetails = new ErrorDetailBuilder()
-                    .add("cause", e.getCause() != null ? e.getCause().toString() : Arrays.stream(e.getStackTrace()).findFirst().get().toString())
-                    .add("message", e.getMessage() != null ? e.getMessage() : "Something went wrong")
-                    .build();
+            // If errorDetails is null, create a new ErrorDetailBuilder and add the message
+            if (this.errorDetails == null) {
+                this.errorDetails = new ErrorDetailBuilder()
+                        .add("cause", e.getCause() != null ? e.getCause().toString() : Arrays.stream(e.getStackTrace()).findFirst().get().toString())
+                        .add("message", e.getMessage() != null ? e.getMessage() : "Something went wrong")
+                        .build();
+            }
+            return new ResponseEntity<>(build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception ex) {
+            logger.error("Error Response from ApiBuilder: status={}, message={}, error={}", HttpStatus.INTERNAL_SERVER_ERROR, message, ex.getMessage());
+            return new ResponseEntity<>(build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**

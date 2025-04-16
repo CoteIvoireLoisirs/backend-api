@@ -1,8 +1,8 @@
 package com.erastedev.ciexplore.v1.adapters.web.api.service;
 
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ApiBuilder;
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ErrorDetailBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ApiBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ErrorDetailBuilder;
 import com.erastedev.ciexplore.v1.domain.ports.out.logs.RequestLoggingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

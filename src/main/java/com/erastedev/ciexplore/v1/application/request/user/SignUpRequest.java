@@ -8,17 +8,46 @@
  */
 package com.erastedev.ciexplore.v1.application.request.user;
 
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UserSignUpRequest {
+public class SignUpRequest {
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String username;
+
+    @NotBlank
     private String password;
+
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
+    @NotBlank
     private String phoneNumber;
-    private String employer;
+
+    /**
+     * Constructs a new {@link User} instance using the fields in this {@link SignUpRequest}.
+     *
+     * @return a {@link User} object with the email, username, password, first name, last name, and phone number set
+     */
+    public User buildUser() {
+        User user = new User();
+        user.setEmail(email);
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhoneNumber(phoneNumber);
+        user.setAutoFields();
+        return user;
+    }
 }

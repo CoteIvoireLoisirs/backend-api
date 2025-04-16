@@ -1,6 +1,6 @@
 package com.erastedev.ciexplore.v1.adapters.web.http.files;
 
-import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.ApiEndpoints;
+import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
 import com.erastedev.ciexplore.v1.application.services.files.FileNameBuilder;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping(ApiEndpoints.UPLOAD)
+@RequestMapping(Endpoint.UPLOAD)
 @Tag(name = "Upload API", description = "Operations related to file upload")
 public class UploadController {
 

@@ -1,8 +1,8 @@
 package com.erastedev.ciexplore.v1.application.services.language;
 
-import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
+import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.language.LangCodeEnum;
 import com.erastedev.ciexplore.v1.domain.models.language.Language;
 import com.erastedev.ciexplore.v1.domain.ports.in.language.ISuccessLangService;
@@ -19,7 +19,7 @@ public class LangServiceImpl implements ISuccessLangService {
     UserServiceImpl userService;
 
     @Autowired
-    UserAuthServiceImpl userAuthService;
+    AuthenticationServiceImpl userAuthService;
 
     Logger logger = LoggerFactory.getLogger(LangServiceImpl.class);
 

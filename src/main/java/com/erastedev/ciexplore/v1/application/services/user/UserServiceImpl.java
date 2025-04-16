@@ -7,7 +7,7 @@ import com.erastedev.ciexplore.v1.application.services.files.FileNameBuilder;
 import com.erastedev.ciexplore.v1.application.services.files.FileStorageServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
 import com.erastedev.ciexplore.v1.application.validator.out.user.CreateUserValidator;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.workspace.Workspace;
 import com.erastedev.ciexplore.v1.domain.models.FileNameParam;
 import com.erastedev.ciexplore.v1.domain.models.FileUploadResponse;
@@ -39,8 +39,9 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     @Autowired
     private WorkspaceServiceImpl workspaceService;
 
+    /* @Lazy
     @Autowired
-    UserAuthServiceImpl userAuthService;
+    AuthenticationServiceImpl authService; */
 
     @Autowired
     private CreateUserValidator validator;
@@ -80,7 +81,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     public User save(User entity) {
         try {
             if (entity.getId() == null) {
-                entity.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
+                // entity.setUpdateBy(authService.getCurrentLoggedUser().getId());
                 entity.setAutoFields();
             }
             logger.info("save >> user updated: {}", entity);
@@ -167,7 +168,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
             user.setDisabled(false);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setAutoFields();
-            user.setUpdateBy(userAuthService.getLoggedUserId());
+            // user.setUpdateBy(authService.getLoggedUserId());
             return save(user);
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,7 +247,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
             if (!Objects.equals(user.getPassword(), oldUser.getPassword())) {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
-            user.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
+            // user.setUpdateBy(authService.getCurrentLoggedUser().getId());
             user.setUpdated(DateUtil.getCurrentTimestamp());
 
             return UserRegisterAttempt.builder().user(save(user)).state(null).success(true).build();
@@ -314,7 +315,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     @Override
     public User enableOrDisableUser(User user, boolean enabled) {
         user.setDisabled(enabled);
-        user.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
+        // user.setUpdateBy(authService.getCurrentLoggedUser().getId());
         user.setUpdated(DateUtil.getCurrentTimestamp());
         logger.info("enableOrDisableUser >> user updated: {}", user);
         return save(user);
@@ -350,7 +351,7 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
 
             // update user
             // user.setAvatar(uploadResponse.getFileName());
-            user.setUpdateBy(userAuthService.getCurrentLoggedUser().getId());
+            // user.setUpdateBy(authService.getCurrentLoggedUser().getId());
             user.setUpdated(DateUtil.getCurrentTimestamp());
             repository.save(user);
 
