@@ -2,19 +2,18 @@ package com.erastedev.ciexplore.v1.domain.ports.in.user.auth;
 
 import com.erastedev.ciexplore.v1.application.request.user.InviteUserRequest;
 import com.erastedev.ciexplore.v1.application.request.user.InviteUserResponse;
-import com.erastedev.ciexplore.v1.application.request.user.UserSignInRequest;
+import com.erastedev.ciexplore.v1.application.request.user.SignInRequest;
 import com.erastedev.ciexplore.v1.application.request.user.UserSignUpRequest;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 public interface IUserAuthService {
@@ -32,7 +31,7 @@ public interface IUserAuthService {
      * @param param the user to authenticate
      * @return an AuthenticationResult containing the result of the authentication attempt
      */
-    AuthenticationResult authenticate(UserSignInRequest param);
+    AuthenticationResult authenticate(SignInRequest param);
 
     /**
      * Builds an AuthenticationResponse containing the authentication record,

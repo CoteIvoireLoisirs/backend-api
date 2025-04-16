@@ -1,6 +1,6 @@
 package com.erastedev.ciexplore.v1.adapters.web.api.endpoints;
 
-public class ApiEndpoints {
+public class Endpoint {
     public static final String BASE_API = "/api";
     public static final String BASE_PUBLIC_ASSETS = "";
 

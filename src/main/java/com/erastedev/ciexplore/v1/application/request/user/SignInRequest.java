@@ -14,7 +14,4 @@ public class UserSignInRequest {
     @NotNull
     @NotBlank
     private String password;
-
-    @Null
-    private String workspaceCode;
 }

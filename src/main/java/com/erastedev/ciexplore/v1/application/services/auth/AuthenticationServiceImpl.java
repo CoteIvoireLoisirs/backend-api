@@ -11,8 +11,7 @@ import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationR
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
 import com.erastedev.ciexplore.v1.application.services.user.auth.JwtServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.workspace.WorkspaceServiceImpl;
-import com.erastedev.ciexplore.v1.domain.entities.rights.Right;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserMapper;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
@@ -113,10 +112,9 @@ public class UserAuthServiceImpl implements IUserAuthService {
      * not
      */
     @Transactional
-    public AuthenticationResult authenticate(UserSignInRequest param) {
+    public AuthenticationResult authenticate(SignInRequest param) {
         String username = param.getUsername();
         String password = param.getPassword();
-        String workspaceCode = param.getWorkspaceCode();
         Optional<User> user = userService.getOptionalUserByEmailOrUsername(username);
 
         logger.error("user {}", user);

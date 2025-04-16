@@ -2,7 +2,7 @@ package com.erastedev.ciexplore.v1.adapters.web.exception;
 
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
-import com.erastedev.ciexplore.v1.adapters.web.api.builder.ErrorDetailBuilder;
+import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ErrorDetailBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

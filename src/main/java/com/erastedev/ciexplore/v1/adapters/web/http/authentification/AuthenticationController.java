@@ -13,7 +13,7 @@ import com.erastedev.ciexplore.v1.application.services.user.UserAuthServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationRecord;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResponse;
 import com.erastedev.ciexplore.v1.application.services.user.auth.AuthenticationResult;
-import com.erastedev.ciexplore.v1.domain.entities.user.User;
+import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
 import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 import com.erastedev.ciexplore.v1.domain.models.logs.Loggable;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
