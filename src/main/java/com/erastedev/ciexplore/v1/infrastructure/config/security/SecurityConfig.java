@@ -59,26 +59,31 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                // Swagger UI
+                                Endpoint.SWAGGER_UI,
+                                Endpoint.SWAGGER_UI_PATH,
+                                Endpoint.SWAGGER_V3_API_DOCS,
+                                Endpoint.LOGOUT_USER_ENDPOINT,
+
+                                // Public endpoints
                                 Endpoint.REGISTER_FIRST_USER_ENDPOINT,
                                 Endpoint.LOGIN_USER_ENDPOINT,
                                 Endpoint.REGISTER_USER_ENDPOINT,
+                                Endpoint.VERIFY_EMAIL_ENDPOINT,
                                 Endpoint.VERIFY_RECOVERY_CODE_ENDPOINT,
                                 Endpoint.RESET_PASSWORD_ENDPOINT,
                                 Endpoint.FORGET_PASSWORD_ENDPOINT,
+
+                                // Public assets
+                                "/uploads/**",
 
                                 // TODO : remove, must be authorized by JWT
                                 Endpoint.INVITE_USER_ENDPOINT,
                                 Endpoint.REFRESH_TOKEN_ENDPOINT,
                                 Endpoint.PUBLIC_WORKSPACE_ENDPOINT,
                                 Endpoint.PUBLIC_ASSET_ENDPOINT + "/**",
-                                Endpoint.I18N + "/**",
+                                Endpoint.I18N + "/**"
                                 // TODO : remove, must be authorized by JWT
-                                Endpoint.SWAGGER_UI,
-                                Endpoint.SWAGGER_UI_PATH,
-                                Endpoint.SWAGGER_V3_API_DOCS,
-                                Endpoint.LOGOUT_USER_ENDPOINT,
-
-                                "/uploads/**"
                         )
                         .permitAll()
                         .anyRequest()

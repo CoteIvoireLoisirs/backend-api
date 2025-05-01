@@ -1,14 +1,51 @@
 package com.erastedev.ciexplore.v1.domain.ports.out.seeders;
 
+import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
-public abstract class AbstractCommonSeeder {
+public abstract class AbstractCommonSeeder<T> {
     @Autowired
     private SeederManager seederManager;
+
+    /**
+     * Provides a {@link Faker} instance to be used by the seeder.
+     * <p>
+     * This method must be implemented by all concrete subclasses of {@link AbstractCommonSeeder}.
+     * It is responsible for returning a {@link Faker} instance that is used
+     * by the seeder to generate fake data.
+     *
+     * @return a {@link Faker} instance
+     */
+    protected abstract Faker faker();
+
+    /**
+     * Retrieves the limit for the seeder.
+     * <p>
+     * This method must be implemented by all concrete subclasses of
+     * {@link AbstractCommonSeeder}. It is responsible for providing the
+     * maximum number of entities that should be generated or processed
+     * by the seeder.
+     *
+     * @return the limit as an integer
+     */
+    protected abstract int getLimit();
+
+    /**
+     * Generates fake data that can be used to seed the database.
+     * <p>
+     * This method must be implemented by all concrete subclasses of
+     * {@link AbstractCommonSeeder}. It is responsible for returning a list
+     * of entities that can be used to seed the database.
+     *
+     * @return a list of entities
+     */
+    public abstract List<T> fakeData();
 
     /**
      * Execute the seeder.

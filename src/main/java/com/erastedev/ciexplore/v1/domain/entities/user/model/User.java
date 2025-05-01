@@ -23,7 +23,6 @@ public class User extends AbstractCommonEntity<User> {
 
     @Column(unique = true)
     @JsonIgnore
-
     private UUID uuid = UUID.randomUUID();
 
     @Column(unique = true)
@@ -32,6 +31,7 @@ public class User extends AbstractCommonEntity<User> {
     /**
      * Required. Will be stored as a hash.
      */
+    @JsonIgnore
     private String password;
 
     /**
@@ -51,6 +51,12 @@ public class User extends AbstractCommonEntity<User> {
     private String email;
 
     private String phoneNumber;
+
+    @JsonIgnore
+    private Date verifiedAt;
+
+    @JsonIgnore
+    private String verificationCode;
 
     /**
      * * START REQUIRED AbstractCommonEntity

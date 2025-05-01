@@ -67,6 +67,16 @@ public class CreateUserValidator {
         }
     }
 
+    /**
+     * Validates the registration attempt based on the provided sign-up request.
+     * Checks if the required fields are present and whether the email or username
+     * are already in use. If validation fails, returns a {@link UserRegisterAttempt}
+     * with an appropriate failure state. If an error occurs during validation, returns
+     * a {@link UserRegisterAttempt} with a general failure state.
+     *
+     * @param signUpRequest the sign-up request containing user registration details to validate
+     * @return a {@link UserRegisterAttempt} indicating the result of the validation attempt
+     */
     public UserRegisterAttempt validateRegisterAttempt(SignUpRequest signUpRequest) {
         try {
             if (signUpRequest == null || signUpRequest.getEmail() == null || signUpRequest.getUsername() == null) {
@@ -89,7 +99,6 @@ public class CreateUserValidator {
 
             return null;
         } catch (Exception e) {
-            logger.error("userValidation {}", e.getMessage());
             e.printStackTrace();
             return UserRegisterAttempt.builder().success(false).state(UserRegisterState.SOMETHING_WENT_WRONG).build();
         }

@@ -8,29 +8,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 // @Component
-public class WorkspaceSeeder extends AbstractCommonSeeder {
-    @Autowired
-    private WorkspaceServiceImpl service;
-
-    @Autowired
-    private SeederManager seederManager;
-
-    Logger logger = LoggerFactory.getLogger(UserSeeder.class);
-
-    @Override
-    public void run() {
-        Workspace workspace = new Workspace();
-        workspace.setName("OMCG");
-        workspace.setCode("OMCG");
-        workspace.setLimitUser(100);
-        workspace.setAutoFields();
-        // repository.save(workspace);
-        // service.saveWorkspace(workspace);
-    }
-
-    @Override
-    public boolean shouldRun() {
-        return !seederManager.hasRun(this.getClass().getName());
-    }
+// extends AbstractCommonSeeder
+public class WorkspaceSeeder  {
+//    @Autowired
+//    private WorkspaceServiceImpl service;
+//
+//    @Autowired
+//    private SeederManager seederManager;
+//
+//    Logger logger = LoggerFactory.getLogger(UserSeeder.class);
+//
+//    @Override
+//    public List fakeData() {
+//        return List.of();
+//    }
+//
+//    @Override
+//    public void run() {
+//        Workspace workspace = new Workspace();
+//        workspace.setName("OMCG");
+//        workspace.setCode("OMCG");
+//        workspace.setLimitUser(100);
+//        workspace.setAutoFields();
+//        // repository.save(workspace);
+//        // service.saveWorkspace(workspace);
+//    }
+//
+//    @Override
+//    public boolean shouldRun() {
+//        return !seederManager.hasRun(this.getClass().getName());
+//    }
 }

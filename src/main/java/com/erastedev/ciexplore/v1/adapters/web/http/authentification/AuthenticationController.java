@@ -4,10 +4,7 @@ import com.erastedev.ciexplore.v1.adapters.web.api.endpoints.Endpoint;
 import com.erastedev.ciexplore.v1.adapters.web.api.ApiResponse;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.ApiResponseService;
 import com.erastedev.ciexplore.v1.adapters.web.api.service.builder.ApiBuilder;
-import com.erastedev.ciexplore.v1.application.request.user.InviteUserRequest;
-import com.erastedev.ciexplore.v1.application.request.user.InviteUserResponse;
-import com.erastedev.ciexplore.v1.application.request.user.SignInRequest;
-import com.erastedev.ciexplore.v1.application.request.user.SignUpRequest;
+import com.erastedev.ciexplore.v1.application.request.user.*;
 import com.erastedev.ciexplore.v1.application.services.logs.LogServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.auth.AuthenticationServiceImpl;
 import com.erastedev.ciexplore.v1.application.services.user.UserServiceImpl;
@@ -19,6 +16,7 @@ import com.erastedev.ciexplore.v1.domain.models.AuditLogActionCode;
 import com.erastedev.ciexplore.v1.domain.models.logs.Loggable;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterAttempt;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
+import com.erastedev.ciexplore.v1.infrastructure.utils.EnumToStringConverter;
 import com.erastedev.ciexplore.v1.infrastructure.utils.HttpRequestUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -89,7 +87,7 @@ public class AuthenticationController {
             AuthenticationResult result = authService.authenticate(request);
 
             if (result.isSuccess()) {
-                User userAttempt = userService.getUserByUsername(request.getUsername());
+                User userAttempt = userService.getUserByUsernameOrEmail(request.getUsername());
                 AuthenticationRecord record = new AuthenticationRecord(result.getToken(), "Bearer");
 
                 authResponse = authService.buildAuthenticationResponse(record, userAttempt);
@@ -148,61 +146,28 @@ public class AuthenticationController {
     }
 
     /**
-     * Registers a new user and saves it to the database.
-     * <p>
-     * This endpoint accepts a UserSignUpRequest containing the user details to be
-     * registered.
-     * It maps the request to a User entity, encrypts the password, and saves the
-     * user to
-     * the database. If successful, it returns a response containing the newly
-     * created user.
+     * Registers a new user by creating an account based on the provided registration details.
+     * Sends a confirmation email upon successful registration of the user.
+     * If registration fails, an appropriate error response is returned.
      *
-     * @param user the UserSignUpRequest containing the user details to be
-     *             registered
-     * @return a ResponseEntity containing an ApiResponse with the created user if
-     * successful,
-     * or an error message if registration fails
-     * @throws Exception if there is an error during the registration process
+     * @param user the SignUpRequest object containing the registration details for the new user
+     * @return a ResponseEntity containing an ApiResponse with the created User details if
+     * registration is successful, or an error message if the registration fails
      */
     @PostMapping(Endpoint.REGISTER_USER)
     @Operation(summary = "Register a new user", description = "Creates a new user account and returns the created user")
     public ResponseEntity<ApiResponse<User>> registerUser(
-            @RequestBody SignUpRequest user) {
+            @RequestBody SignUpRequest user
+    ) {
         try {
-            String httpMessage = "";
-            HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
             UserRegisterAttempt attempt = authService.registerUser(user);
-            UserRegisterState registrationState = attempt.getState();
 
-            logger.info("User registration {}", registrationState);
-            if (registrationState.equals(UserRegisterState.SUCCESS)) {
-                authService.SendRegisterConfirmationEmailMessage(user.getEmail());
+            if (attempt.getState() == null || attempt.getState().equals(UserRegisterState.SUCCESS)) {
+                authService.SendConfirmRegisterMail(attempt.getUser());
                 return response.success("User registered successfully", attempt.getUser(), HttpStatus.CREATED);
-            } else {
-                httpStatus = switch (registrationState) {
-                    case ALREADY_REGISTERED -> {
-                        httpMessage = "User is already registered.";
-                        yield HttpStatus.CONFLICT;
-                    }
-                    case INVALID_EMAIL -> {
-                        httpMessage = "Invalid email format.";
-                        yield HttpStatus.BAD_REQUEST;
-                    }
-                    case INVALID_PASSWORD -> {
-                        httpMessage = "Password does not meet security requirements.";
-                        yield HttpStatus.BAD_REQUEST;
-                    }
-                    case INVALID_INVITATION_CODE -> {
-                        httpMessage = "The invitation code is invalid.";
-                        yield HttpStatus.FORBIDDEN;
-                    }
-                    default -> {
-                        httpMessage = "The invitation code has expired.";
-                        yield HttpStatus.GONE;
-                    }
-                };
-                return response.error(httpMessage, "REGISTER_ERROR_" + httpStatus + " :: " + httpMessage, null, httpStatus);
             }
+
+            return response.error(EnumToStringConverter.enumToSentence(attempt.getState()), attempt.getState().toString(), null, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             e.printStackTrace();
             return response.error("Error registering user", e.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -210,28 +175,35 @@ public class AuthenticationController {
     }
 
     /**
-     * Register the first user of the application. This endpoint is only accessible
-     * if no users exist in the database. The secret key is required and must match
-     * the predefined secret password.
+     * Verify email after registration
+     * <p>
+     * This endpoint accepts an email address and a verification code as parameters.
+     * It checks if the provided verification code matches the one associated with the email
+     * address and returns a success response if the verification is successful.
+     * If the verification fails, it returns an error response indicating the failure.
+     * If an unexpected error occurs, it returns an internal server error response.
      *
-     * @param user      the user to be registered as the first user
-     * @param secretKey the secret key required to register the first user
-     * @return the registered user if successful, or an error response if the
-     * conditions are not met
+     * @param request the VerifyEmailRequest containing the email address and verification code
+     * @return a ResponseEntity containing an ApiResponse with a boolean indicating the success
+     * of the verification, or an error message if the verification fails
      */
-    @PostMapping(Endpoint.REGISTER_FIRST_USER)
-    @Operation(summary = "If don't have any user, register first user", description = "Create a new user account and returns the created user")
-    public ResponseEntity<ApiResponse<User>> registerFirstUser(
-            @RequestBody SignUpRequest user, @RequestParam String secretKey, HttpServletRequest request) {
+    @PostMapping(Endpoint.VERIFY_EMAIL_WITH_CODE)
+    @Operation(summary = "Verify Email", description = "Verify email after registration")
+    public ResponseEntity<ApiResponse<Boolean>> verifyEmailFromCode(
+            @RequestBody VerifyEmailRequest request
+    ) {
         try {
-            User savedUser = authService.registerFirstUser(user, secretKey);
-            if (savedUser != null) {
-                authService.SendRegisterConfirmationEmailMessage(savedUser.getEmail());
-                return response.success("User registered successfully", savedUser, HttpStatus.CREATED);
+            UserRegisterAttempt attempt = userService.verifyEmail(request);
+
+            if (attempt.getState() == null || attempt.getState().equals(UserRegisterState.SUCCESS)) {
+                authService.SendConfirmRegisterMail(attempt.getUser());
+                return response.success("User registered successfully", true, HttpStatus.CREATED);
             }
-            return response.error("Error registering user", "Error registering user", null, HttpStatus.BAD_REQUEST);
+
+            return response.error(EnumToStringConverter.enumToSentence(attempt.getState()), attempt.getState().toString(), null, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return response.error("Error registering user", e.getMessage(), null, HttpStatus.UNAUTHORIZED);
+            e.printStackTrace();
+            return response.error("Error registering user", e.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

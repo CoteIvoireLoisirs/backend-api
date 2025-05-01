@@ -9,22 +9,36 @@ public class Endpoint {
 
     // AUTH ENDPOINTS
     public static final String AUTH = BASE_API + "/auth";
-    public static final String REGISTER_USER = "/signup";
-    public static final String REGISTER_USER_ENDPOINT = AUTH + REGISTER_USER;
-    public static final String REGISTER_FIRST_USER = "/signup-first-user";
-    public static final String REGISTER_FIRST_USER_ENDPOINT = AUTH + REGISTER_FIRST_USER;
+
     public static final String LOGIN_USER = "/signin";
     public static final String LOGIN_USER_ENDPOINT = AUTH + LOGIN_USER;
+
+    public static final String REGISTER_USER = "/signup";
+    public static final String REGISTER_USER_ENDPOINT = AUTH + REGISTER_USER;
+
+    public static final String VERIFY_EMAIL_WITH_CODE = "/verify-email";
+    public static final String VERIFY_EMAIL_ENDPOINT = AUTH + VERIFY_EMAIL_WITH_CODE;
+    public static final String VERIFY_EMAIL_WITH_TOKEN = "/verify-email/{token}";
+    public static final String VERIFY_EMAIL_TOKEN_ENDPOINT = AUTH + VERIFY_EMAIL_WITH_TOKEN;
+
+    public static final String REGISTER_FIRST_USER = "/signup-first-user";
+    public static final String REGISTER_FIRST_USER_ENDPOINT = AUTH + REGISTER_FIRST_USER;
+
     public static final String INVITE_USER = "/invite";
     public static final String INVITE_USER_ENDPOINT = AUTH + INVITE_USER;
+
     public static final String FORGET_PASSWORD = "/forget-password";
     public static final String FORGET_PASSWORD_ENDPOINT = AUTH + FORGET_PASSWORD;
+
     public static final String VERIFY_RECOVERY_CODE = "/verify-recovery-code";
     public static final String VERIFY_RECOVERY_CODE_ENDPOINT = AUTH + VERIFY_RECOVERY_CODE;
+
     public static final String RESET_PASSWORD = "/reset-password";
     public static final String RESET_PASSWORD_ENDPOINT = AUTH + RESET_PASSWORD;
+
     public static final String REFRESH_TOKEN = "/refresh-token";
     public static final String REFRESH_TOKEN_ENDPOINT = AUTH + REFRESH_TOKEN;
+
     public static final String LOGOUT_USER = "/log-out";
     public static final String LOGOUT_USER_ENDPOINT = AUTH + LOGOUT_USER;
 

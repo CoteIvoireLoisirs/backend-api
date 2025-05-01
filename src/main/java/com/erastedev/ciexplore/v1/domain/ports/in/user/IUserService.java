@@ -1,6 +1,7 @@
 package com.erastedev.ciexplore.v1.domain.ports.in.user;
 
 
+import com.erastedev.ciexplore.v1.application.request.user.VerifyEmailRequest;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonValidation;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonError;
 import com.erastedev.ciexplore.v1.domain.entities.user.model.User;
@@ -21,6 +22,16 @@ public interface IUserService {
      * @return the user associated with the given username, or null if no such user exists
      */
     User getUserByUsername(String username);
+
+    /**
+     * Retrieves a user based on the provided login identifier, which can be
+     * either a username or an email address.
+     *
+     * @param login the username or email address used to find the user
+     * @return the user associated with the given username or email, or null if
+     * no such user exists
+     */
+    User getUserByUsernameOrEmail(String login);
 
     /**
      * Retrieves a user by their email address.
@@ -80,6 +91,22 @@ public interface IUserService {
     UserRegisterAttempt createUserWithoutAssociation(User user);
 
     /**
+     * Creates and saves a new user with an encoded password.
+     *
+     * @param user the user to create, containing user details such as username, email, and raw password
+     * @return the created user with an encoded password, as saved in the repository
+     */
+    User createUser(User user);
+
+    /**
+     * Generates a verification code with the specified length.
+     *
+     * @param length the length of the verification code to generate
+     * @return a String containing the generated verification code
+     */
+    String generateVerifyCode(int length);
+
+    /**
      * Updates the provided user details.
      *
      * @param user the user details to update
@@ -90,7 +117,7 @@ public interface IUserService {
     /**
      * Enables or disables a user.
      *
-     * @param user   the user to enable or disable
+     * @param user    the user to enable or disable
      * @param enabled whether to enable or disable the user
      * @return the user that was enabled or disabled
      */
@@ -182,4 +209,19 @@ public interface IUserService {
      * @return a String instance with the encoded password
      */
     String encodePassword(String password);
+
+    /**
+     * Verifies if the provided recovery code matches the one associated with the
+     * email address.
+     * <p>
+     * This method checks if the provided recovery code matches the one stored in
+     * the database for the given email address. If the code is valid, true is
+     * returned. If the code is invalid or if an unexpected error occurs, false
+     * is returned.
+     * <p>
+     *
+     * @param request the request containing the email address and recovery code
+     * @return UserRegisterAttempt containing the result of the verification
+     */
+    UserRegisterAttempt verifyEmail(VerifyEmailRequest request);
 }

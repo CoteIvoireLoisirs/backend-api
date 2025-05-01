@@ -1,5 +1,6 @@
 package com.erastedev.ciexplore.v1.application.services.user;
 
+import com.erastedev.ciexplore.v1.application.request.user.VerifyEmailRequest;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonValidation;
 import com.erastedev.ciexplore.v1.application.validator.in.CommonError;
 import com.erastedev.ciexplore.v1.adapters.web.message.files.FileUploadError;
@@ -17,6 +18,7 @@ import com.erastedev.ciexplore.v1.domain.entities.user.model.UserRegisterState;
 import com.erastedev.ciexplore.v1.domain.ports.in.ICommonRepository;
 import com.erastedev.ciexplore.v1.domain.ports.in.user.IUserService;
 import com.erastedev.ciexplore.v1.domain.ports.out.AbstractCommonService;
+import com.erastedev.ciexplore.v1.infrastructure.utils.regex.Regex;
 import com.erastedev.ciexplore.v1.infrastructure.repository.user.UserRepository;
 import com.erastedev.ciexplore.v1.infrastructure.utils.DateUtil;
 import org.slf4j.Logger;
@@ -26,10 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl extends AbstractCommonService<User> implements IUserService {
@@ -38,10 +38,6 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
 
     @Autowired
     private WorkspaceServiceImpl workspaceService;
-
-    /* @Lazy
-    @Autowired
-    AuthenticationServiceImpl authService; */
 
     @Autowired
     private CreateUserValidator validator;
@@ -81,10 +77,9 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     public User save(User entity) {
         try {
             if (entity.getId() == null) {
-                // entity.setUpdateBy(authService.getCurrentLoggedUser().getId());
                 entity.setAutoFields();
             }
-            logger.info("save >> user updated: {}", entity);
+
             return repository.save(entity);
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,6 +101,32 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
     @Override
     public User getUserByUsername(String username) {
         return repository.findByUsername(username).orElse(null);
+    }
+
+    @Override
+    public User getUserByUsernameOrEmail(String login) {
+        try {
+            // Supprime les espaces inutiles autour du login
+            login = login.trim();
+
+            // Expression régulière pour valider un email
+            Pattern emailPattern = Pattern.compile(Regex.emailRegex);
+
+            // Vérifie si le login correspond à un email valide
+            if (emailPattern.matcher(login).matches()) {
+                // Tente de récupérer l'utilisateur par email
+                User userByEmail = getUserByEmail(login);
+                if (userByEmail != null) {
+                    return userByEmail; // Retourne l'utilisateur s'il est trouvé
+                }
+            }
+
+            // Si aucun utilisateur n'est trouvé par email, tente de récupérer par nom d'utilisateur
+            return getUserByUsername(login);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -223,6 +244,33 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
         } catch (Exception e) {
             e.printStackTrace();
             return UserRegisterAttempt.builder().user(null).state(UserRegisterState.SOMETHING_WENT_WRONG).success(false).build();
+        }
+    }
+
+    @Override
+    public User createUser(User user) {
+        user.setPassword(encodePassword(user.getPassword()));
+        user.setVerificationCode(generateVerifyCode(6));
+        user.setVerifiedAt(null);
+        return save(user);
+    }
+
+    @Override
+    public String generateVerifyCode(int length) {
+        try {
+            String characters = "0123456789";
+            StringBuilder codeBuilder = new StringBuilder();
+            Random random = new Random();
+
+            for (int i = 0; i < length; i++) {
+                int index = random.nextInt(characters.length());
+                codeBuilder.append(characters.charAt(index));
+            }
+
+            return codeBuilder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -468,14 +516,36 @@ public class UserServiceImpl extends AbstractCommonService<User> implements IUse
         return repository.findById(id).orElse(null);
     }
 
-    /**
-     * Encodes the provided password using a password encoder.
-     *
-     * @param password the password to encode
-     * @return a String instance with the encoded password
-     */
     @Override
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);
+    }
+
+    @Override
+    public UserRegisterAttempt verifyEmail(VerifyEmailRequest request) {
+        try {
+            Optional<User> user = getOptionalUserByEmail(request.getEmail());
+
+            if (user.isEmpty()) {
+                return UserRegisterAttempt.userNotFound();
+            }
+
+            if (user.get().getVerifiedAt() != null) {
+                return UserRegisterAttempt.withError(user.get(), UserRegisterState.USER_ALREADY_VERIFIED);
+            }
+
+            if (!Objects.equals(user.get().getVerificationCode(), request.getCode())) {
+                return UserRegisterAttempt.withError(user.get(), UserRegisterState.INVALID_VERIFICATION_CODE);
+            }
+
+            user.get().setVerificationCode(null);
+            user.get().setVerifiedAt(new Date());
+            repository.save(user.get());
+
+            return UserRegisterAttempt.withSuccess(user.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return UserRegisterAttempt.somethingWentWrong();
+        }
     }
 }

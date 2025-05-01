@@ -60,14 +60,6 @@ public interface IAuthenticationService {
     UserRegisterAttempt registerUser(SignUpRequest user);
 
     /**
-     * Registers the first user in the system, typically an admin.
-     *
-     * @param admin the user to be registered as the first user
-     * @return the registered user
-     */
-    User registerFirstUser(SignUpRequest admin, String secretKey);
-
-    /**
      * Sends a password recovery code to the email address associated with the provided email.
      *
      * @param email the email address to send the recovery code to
@@ -109,9 +101,8 @@ public interface IAuthenticationService {
      * Sends a password recovery code to the email address associated with the provided email.
      *
      * @param email the email address to send the registration validation message
-     * @throws Exception if there is an error sending the registration validation message
      */
-    boolean SendRegisterConfirmationEmailMessage(String email) throws Exception;
+    void SendConfirmRegisterMail(User user);
 
     /**
      * Authenticates a user given their username and password.

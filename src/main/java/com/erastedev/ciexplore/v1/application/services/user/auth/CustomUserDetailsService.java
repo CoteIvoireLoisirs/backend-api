@@ -26,30 +26,32 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param username the username to search for
+     * @return a {@link UserDetails} object containing the user's details
+     * @throws UsernameNotFoundException if no user is found with the given username
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        try {
-            Optional<com.erastedev.ciexplore.v1.domain.entities.user.model.User> userSearch = userRepository.findByUsername(username);
+        Optional<com.erastedev.ciexplore.v1.domain.entities.user.model.User> userSearch = userRepository.findByUsername(username)
+                .or(() -> userRepository.findByEmail(username));
 
-            List<String> roles = new ArrayList<>();
-            // TODO : get roles from user service
-            roles.add("USER");
-
-            logger.info("loadUserByUsername {}", userSearch);
-            if (userSearch.isEmpty()) {
-                throw new UsernameNotFoundException("User not found");
-            }
-
-            com.erastedev.ciexplore.v1.domain.entities.user.model.User user = userSearch.get();
-
-            return User.builder()
-                    .username(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(roles.toArray(new String[0]))
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (userSearch.isEmpty()) {
             throw new UsernameNotFoundException("User not found");
         }
+
+        com.erastedev.ciexplore.v1.domain.entities.user.model.User user = userSearch.get();
+
+        // Build the user details object
+        return User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles(
+                        // TODO: get roles from user service
+                        new String[]{"USER"}
+                )
+                .build();
     }
 }

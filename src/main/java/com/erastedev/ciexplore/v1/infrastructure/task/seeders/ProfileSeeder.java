@@ -8,24 +8,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class ProfileSeeder extends AbstractCommonSeeder {
-    @Autowired
-    private UserRepository userRepository;
+import java.util.List;
 
-    @Autowired
-    private SeederManager seederManager;
-
-    Logger logger = LoggerFactory.getLogger(ProfileSeeder.class);
-
-    @Override
-    public void run() {
-        logger.info("ProfileSeeder>initializeDefaultData");
-        // service.initializeDefaultData();
-    }
-
-    @Override
-    public boolean shouldRun() {
-        return !seederManager.hasRun(this.getClass().getName());
-    }
+// @Component
+// extends AbstractCommonSeeder
+public class ProfileSeeder  {
+//    @Autowired
+//    private UserRepository userRepository;
+//
+//    @Autowired
+//    private SeederManager seederManager;
+//
+//    Logger logger = LoggerFactory.getLogger(ProfileSeeder.class);
+//
+//    @Override
+//    public List fakeData() {
+//        return List.of();
+//    }
+//
+//    @Override
+//    public void run() {
+//        logger.info("ProfileSeeder>initializeDefaultData");
+//        // service.initializeDefaultData();
+//    }
+//
+//    @Override
+//    public boolean shouldRun() {
+//        return !seederManager.hasRun(this.getClass().getName());
+//    }
 }

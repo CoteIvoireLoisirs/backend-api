@@ -83,13 +83,16 @@ public class NotificationService {
      * simple email method.
      *
      * @param recipient the recipient's email address
-     * @return true if the email was sent successfully, false otherwise
      */
-    public boolean sendRegisterConfirmationEmailMessage(User recipient) {
-        EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setRecipient(recipient.getEmail());
-        emailDetails.setSubject(RegisterConfirmationEmailMessage.SUBJECT);
-        emailDetails.setBody(RegisterConfirmationEmailMessage.MESSAGE(recipient.getDisplayName(), recipient.getUsername()));
-        return emailService.sendHtmlEmail(emailDetails);
+    public void sendRegisterConfirmationEmailMessage(User recipient) {
+        try {
+            EmailDetails emailDetails = new EmailDetails();
+            emailDetails.setRecipient(recipient.getEmail());
+            emailDetails.setSubject(RegisterConfirmationEmailMessage.SUBJECT);
+            emailDetails.setBody(RegisterConfirmationEmailMessage.MESSAGE(recipient.getDisplayName(), recipient.getUsername(), recipient.getVerificationCode()));
+            emailService.sendHtmlEmail(emailDetails);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

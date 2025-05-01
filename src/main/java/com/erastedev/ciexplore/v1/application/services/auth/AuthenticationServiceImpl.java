@@ -203,60 +203,20 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return invitation;
     }
 
-    public UserRegisterAttempt registerUser(SignUpRequest signUpRequest) {
+    public UserRegisterAttempt registerUser(SignUpRequest request) {
         try {
-            UserRegisterAttempt registerAttempt = validator.validateRegisterAttempt(signUpRequest);
+            UserRegisterAttempt attempt = validator.validateRegisterAttempt(request);
 
-            if (registerAttempt.getState() != null) {
-                return registerAttempt;
+            if (attempt != null) {
+                return attempt;
             }
 
-            try {
-                User newUser = userService.save(signUpRequest.buildUser());
-
-                registerAttempt = UserRegisterAttempt.builder()
-                        .user(newUser)
-                        .state(UserRegisterState.SUCCESS)
-                        .success(true)
-                        .build();
-            } catch (Exception e) {
-                registerAttempt.setState(UserRegisterState.INVALID_EMAIL);
-            }
-
-            return registerAttempt;
+            User newUser = userService.createUser(request.buildUser());
+            return UserRegisterAttempt.withSuccess(newUser);
         } catch (Exception e) {
             e.printStackTrace();
-            return UserRegisterAttempt.builder()
-                    .user(null)
-                    .state(UserRegisterState.SOMETHING_WENT_WRONG)
-                    .success(false)
-                    .build();
+            return UserRegisterAttempt.somethingWentWrong();
         }
-    }
-
-    /**
-     * Registers the first user in the system if no users exist in the database and
-     * the provided secret key matches the predefined secret password.
-     *
-     * @param admin     the user to be registered as the first user
-     * @param secretKey the secret key required to register the first user
-     * @return the registered user if successful, or null if the conditions are not
-     * met
-     */
-    @Override
-    public User registerFirstUser(SignUpRequest admin, String secretKey) {
-        // * 1 check if not user exists in the database
-        List<User> users = userService.getAll();
-        if (users.isEmpty() && secretKey.equals(SECRET_PASSWORD)) {
-            // * 2 check secret key
-            if (admin.getUsername() == null) {
-                admin.setUsername(admin.getEmail());
-            }
-
-            return userService.save(UserMapper.mapUserSignUpRequestToUser(admin, passwordEncoder, null));
-        }
-
-        return null;
     }
 
     /**
@@ -396,30 +356,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return oldToken;
     }
 
-    /**
-     * Sends a registration confirmation email to the provided email address.
-     * <p>
-     * This method checks if the user associated with the email address exists.
-     * If the user exists, it calls the notification service to send an email
-     * containing a link to confirm the registration. If the user does not exist,
-     * it returns false. If there is an error sending the email, it throws a
-     * RuntimeException.
-     *
-     * @param email the email address to send the confirmation email to
-     * @return true if the email was sent successfully, false otherwise
-     * @throws Exception if there is an error sending the email
-     */
-    public boolean SendRegisterConfirmationEmailMessage(String email) throws Exception {
-        Optional<User> user = userService.getOptionalUserByEmail(email);
-        if (user.isPresent()) {
-            try {
-                return notificationService.sendRegisterConfirmationEmailMessage(user.get());
-            } catch (Exception e) {
-                logger.info("Error sending email ", e);
-                throw new RuntimeException("Error sending email", e);
-            }
+    public void SendConfirmRegisterMail(User user) {
+        try {
+            notificationService.sendRegisterConfirmationEmailMessage(user);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return false;
     }
 
     /**

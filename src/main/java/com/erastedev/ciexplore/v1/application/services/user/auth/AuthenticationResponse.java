@@ -10,16 +10,7 @@ import java.util.HashMap;
 public class AuthenticationResponse {
     AuthenticationRecord auth;
     User user;
-    HashMap<String, HashMap<String, Boolean>> rights = null;
-    // List<UserProfile> rights = null;
     AuthLoginError error;
-
-    public AuthenticationResponse(AuthenticationRecord auth, User user, HashMap<String, HashMap<String, Boolean>> rights) {
-        this.auth = auth;
-        this.user = user;
-        this.error = AuthLoginError.NONE;
-        this.rights = rights;
-    }
 
     public AuthenticationResponse(AuthenticationRecord auth, User user) {
         this.auth = auth;
